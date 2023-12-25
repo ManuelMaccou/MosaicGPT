@@ -1,4 +1,5 @@
 require('dotenv').config();
+const fetch = require('node-fetch');
 
 
 export async function streamOpenAIResponse(properties, bubble_fn_openAiResponce) {
