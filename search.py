@@ -152,5 +152,5 @@ def extract_context(es_data):
         context += f"Article URL: {article_url}. Excerpt: {chunked_content}\n\n---\n\n"
     return context
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if os.getenv('FLASK_ENV') == 'development':
+    app.run(host='0.0.0.0', port=5000, debug=True)
