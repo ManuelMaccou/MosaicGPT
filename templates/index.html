@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPT Web App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link href="{{ url_for('static', filename='Icons/fontawesome-free-6.5.1-web/css/all.css') }}" rel="stylesheet">
+</head>
+<body>
+  <div class="header">
+    <img src="{{ url_for('static', filename='Logos/PYMNTS/PYMNTS_2023_logo_white.svg') }}" alt="Company logo" class="header-logo">
+    <button class="feedback-button">Contact us</button>
+    <button class="menu-button">&#9776;</button> <!-- Hamburger Icon -->
+  </div>
+  <div class="mobile-menu">
+    <button class="close-button">&times;</button>
+    <button class="feedback-button-mobile">Contact us</button>
+    <h3>Sample Questions</h3>
+    <button class="suggestion-button">How can we improve our risk management for digital currencies?</button>
+    <button class="suggestion-button">What's the best way to integrate blockchain into our payment systems?</button>
+    <button class="suggestion-button">Which international markets are ideal for financial expansion now?</button>
+    <button class="suggestion-button">How do we add ESG criteria into our investment decisions?</button>
+  </div>
+  <div class="container">
+    <div class="main-container">
+      <div class="landing" id="tempLanding">
+        <img src="{{ url_for('static', filename='Logos/PYMNTS/PYMNTS_2022_logo_medium_green.svg') }}" alt="Company logo" class="landing-logo">
+        <h1>Explore the world of Payments</h1>
+      </div>
+      <div id="spinner" class="spinner" style="display: none;">
+        <i class="fa-solid fa-spinner"></i>
+        <!-- You can use an animated GIF or a CSS-based spinner -->
+    </div>
+      <div class="content-wrapper">
+        <div class="answer-container" id="answerContainer">
+          <!-- The answer will be displayed here -->
+        </div>
+        <div class="source-mobile-container" id="sourceMobileContainer">
+          <!-- Placeholder mobile sources for testing -->
+          <div class="source-card-1">
+            <a class="card-link" href="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline" target="_blank">
+              <img src="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline.jpg" alt="Sample Source 1">
+              <h3 class="source-text">This is a sample mobile title that is kind of long. More text for good measure.</h3>
+            </a>
+          </div>
+
+          <div class="source-card-1">
+            <a class="card-link" href="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline" target="_blank">
+              <img src="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline.jpg" alt="Sample Source 1">
+              <h3 class="source-text">This is a sample mobile title that is kind of long. More text for good measure.</h3>
+            </a>
+          </div>
+
+          <div class="source-card-1">
+            <a class="card-link" href="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline" target="_blank">
+              <img src="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline.jpg" alt="Sample Source 1">
+              <h3 class="source-text">This is a sample mobile title that is kind of long. More text for good measure.</h3>
+            </a>
+          </div>
+        </div>
+        <div class="source-column" id="sourceColumn">
+          <!-- Source cards will be dynamically generated here -->
+          <!-- Placeholder source cards for testing -->
+          <div class="source-card-1">
+            <img src="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline.jpg" alt="Sample Source 1">
+            <h3 class="source-text">Sample Source Title 1</h3>
+          </div>
+
+          <div class="source-card-1">
+            <img src="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline.jpg" alt="Sample Source 2">
+            <h3 class="source-text">Sample Source Title 2</h3>
+          </div>
+
+          <div class="source-card-1">
+            <img src="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline.jpg" alt="Sample Source 3">
+            <h3 class="source-text">Sample Source Title 3</h3>
+          </div>
+
+          <div class="source-card-1">
+            <img src="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline.jpg" alt="Sample Source 3">
+            <h3 class="source-text">Sample Source Title 4</h3>
+          </div>
+
+          <div class="source-card-1">
+            <img src="https://www.pymnts.com/wp-content/uploads/2023/11/Worldline.jpg" alt="Sample Source 3">
+            <h3 class="source-text">Sample Source Title 5</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="suggestions">
+      <button class="suggestion-button">How can we improve our risk management for digital currencies?</button>
+      <button class="suggestion-button">What's the best way to integrate blockchain into our payment systems?</button>
+      <button class="suggestion-button">Which international markets are ideal for financial expansion now?</button>
+      <button class="suggestion-button">How do we add ESG criteria into our investment decisions?</button>
+    </div>
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="What would you like to know?" id="searchQuery">
+      <button class="search-button">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
