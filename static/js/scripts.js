@@ -10,6 +10,80 @@ document.addEventListener('DOMContentLoaded', function() {
   var answerContainer = document.getElementById('answerContainer');
   var closeButton = document.querySelector('.close-button');
 
+  fetch('/page-visit', { method: 'POST' })
+    .then(response => response.json())
+    .then(text => {
+      console.log("Received response:", text);
+    })
+    .then(data => {
+        console.log('API Response:', data);
+    })
+    .catch(error => {
+        console.error('Error making the API call:', error);
+    });
+  
+  if (!getCookie('firstVisit')) {
+    showPopup();
+    setCookie('firstVisit', '1', 7); // Expires in 7 days
+  }
+
+  function showPopup() {
+    document.getElementById('welcome-popup').style.display = 'flex';
+    document.getElementById('overlay').style.display = 'block';
+  }
+
+  function closePopup() {
+    document.getElementById('welcome-popup').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }
+
+  var closeButton = document.querySelector('.welcome-popup-button');
+    if (closeButton) {
+      closeButton.addEventListener('click', closePopup);
+  }
+  
+  function setCookie(name, value, days) {
+    var expires = '';
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = '; expires=' + date.toUTCString();
+    }
+    document.cookie = name + '=' + (value || '') + expires + '; path=/';
+  }
+  
+  function getCookie(name) {
+    var nameEQ = name + '=';
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
+
+  function sendDataToGptStats(query, elasticSearchSources) {
+    fetch('/gpt-stats', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            question: query,
+            sources_title: elasticSearchSources.map(source => source.title).join(', '),
+            sources_url: elasticSearchSources.map(source => source.url).join(', ')
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('GPT Stats API Response:', data);
+    })
+    .catch(error => {
+        console.error('Error making the GPT Stats API call:', error);
+    });
+  };
+
   menuButton.addEventListener('click', function() {
       mobileMenu.classList.toggle('visible');
   });
@@ -44,6 +118,8 @@ document.addEventListener('DOMContentLoaded', function() {
     sourceColumn.innerHTML = '';
     sourceMobileContainer.innerHTML = '';
 
+    let elasticSearchSources = [];
+
     // Establish connection to the server for streaming responses
     var stream = new EventSource('/search?query=' + encodeURIComponent(query));
     var receivedSourceCards = false;
@@ -59,8 +135,10 @@ document.addEventListener('DOMContentLoaded', function() {
     stream.onmessage = function(event) {
       if (!receivedSourceCards) {
         var sourceCards = JSON.parse(event.data);
+        elasticSearchSources = sourceCards.map(card => ({ title: card.title, url: card.articleUrl }));
     
         if (sourceCards.length > 0) {
+          sendDataToGptStats(query, elasticSearchSources);
           tempLanding.style.display = 'none';
     
           sourceCards.forEach(function(card) {
@@ -92,6 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
         accumulatedContent += event.data;
         answerContainer.innerHTML = accumulatedContent;
       }
+      
       document.getElementById('spinner').style.display = 'none';
     };
 

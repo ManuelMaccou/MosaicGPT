@@ -1,1 +1,1 @@
-web: gunicorn search:app
+web: gunicorn -w 4 -t 120 search:app

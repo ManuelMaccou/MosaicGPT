@@ -17,10 +17,58 @@ app = Flask(__name__, static_folder='static')
 es_endpoint = os.getenv("ES_PYMNTS_SEACH_APP_ENDPOINT")
 es_search_app_api = os.getenv("ES_PYMNTS_SEARCH_APP_API")
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+bubble_api_key = os.getenv("BUBBLE_API_KEY")
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/page-visit', methods=['POST'])
+def trigger_page_visit_api():
+    flask_env = os.getenv('FLASK_ENV', 'development')
+    
+    if flask_env == 'production':
+        endpoint = "https://mosaicnetwork.co/api/1.1/wf/page_visits"
+    else:
+        endpoint = "https://mosaicnetwork.co/version-test/api/1.1/wf/page_visits"
+
+    headers = {
+        "Authorization": f"Bearer {bubble_api_key}",
+        "Content-Type": "application/json" 
+    }
+
+    response = requests.post(endpoint, headers=headers)
+    app.logger.info(f"API Response: {response.text}")
+    return jsonify(response.json())
+
+@app.route('/gpt-stats', methods=['POST'])
+def trigger_gpt_stats_api():
+    data = request.json
+    question = data.get('question')
+    sources_title = data.get('sources_title')
+    sources_url = data.get('sources_url')
+
+    flask_env = os.getenv('FLASK_ENV', 'development')
+    
+    if flask_env == 'production':
+        endpoint = "https://mosaicnetwork.co/api/1.1/wf/gpt_stats"
+    else:
+        endpoint = "https://mosaicnetwork.co/version-test/api/1.1/wf/gpt_stats"
+
+    headers = {
+        "Authorization": f"Bearer {bubble_api_key}",
+        "Content-Type": "application/json" 
+    }
+
+    body = {
+        "question": question,
+        "sources_title": sources_title,
+        "sources_url": sources_url
+    }
+
+    response = requests.post(endpoint, headers=headers, json=body)
+    app.logger.info(f"API Response: {response.text}")
+    return jsonify(response.json())
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -81,18 +129,18 @@ def search():
                 }
             unique_source_cards[unique_key] = source_card
 
-            logging.info(f"Constructed source card: {unique_source_cards}")
+            # logging.info(f"Constructed source card: {unique_source_cards}")
 
         else:
             logging.error(f"Failed to fetch data from Bubble for source ID {source_id}: {bubble_response.status_code}")
 
             # Log all the source cards after processing
-            logging.info(f"All source cards: {unique_source_cards}")
+            # logging.info(f"All source cards: {unique_source_cards}")
     
     source_cards_data = json.dumps(list(unique_source_cards.values()))
 
-    context = extract_context(es_data)
-    # context = "This is test context"
+    # context = extract_context(es_data)
+    context = "This is test context"
 
     def format_text_to_html(text):
     # Convert bullet points to HTML list items
@@ -106,8 +154,6 @@ def search():
         text = text.replace("\n", "<br>")
 
         return text
-
-
     
     # Stream response from OpenAI
     def generate():
@@ -126,9 +172,6 @@ def search():
                 content = chunk.choices[0].delta.content
                 if content:
                     formatted_content = format_text_to_html(content)
-                    print(f"Received chunk: {chunk}")
-                    print(f"Extracted content: {formatted_content}")
-                    print("***********")
                     yield f"data: {formatted_content}\n\n"
                 if 'done' in chunk:  # Check if 'done' token is present
                     yield "data: [DONE]\n\n"
@@ -152,5 +195,5 @@ def extract_context(es_data):
         context += f"Article URL: {article_url}. Excerpt: {chunked_content}\n\n---\n\n"
     return context
 
-if os.getenv('FLASK_ENV') == 'development':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)

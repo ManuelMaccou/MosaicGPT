@@ -8,19 +8,27 @@
   <link href="{{ url_for('static', filename='Icons/fontawesome-free-6.5.1-web/css/all.css') }}" rel="stylesheet">
 </head>
 <body>
+  <div id="overlay"></div>
   <div class="header">
     <img src="{{ url_for('static', filename='Logos/PYMNTS/PYMNTS_2023_logo_white.svg') }}" alt="Company logo" class="header-logo">
-    <button class="feedback-button">Contact us</button>
+    <button class="contact-button">Contact us</button>
     <button class="menu-button">&#9776;</button> <!-- Hamburger Icon -->
   </div>
   <div class="mobile-menu">
     <button class="close-button">&times;</button>
-    <button class="feedback-button-mobile">Contact us</button>
+    <button class="contact-button-mobile">Contact us</button>
     <h3>Sample Questions</h3>
     <button class="suggestion-button">How can we improve our risk management for digital currencies?</button>
     <button class="suggestion-button">What's the best way to integrate blockchain into our payment systems?</button>
     <button class="suggestion-button">Which international markets are ideal for financial expansion now?</button>
     <button class="suggestion-button">How do we add ESG criteria into our investment decisions?</button>
+  </div>
+  <div id="welcome-popup" class="welcome-popup">
+    <div class="popup-content">
+      <h2>PYMNTS GPT Demo</h2>
+      <p>This is a simple demo to provide an early idea of what an AI assistant could provide the PYMNTS community. We invite you to try it out and let us know what you think. Our hope is that his demo will earn us a conversation with you team to discuss how a similar AI assistant be added to your suite of products.</p>
+      <button class="welcome-popup-button">Continue</button>
+    </div>
   </div>
   <div class="container">
     <div class="main-container">
