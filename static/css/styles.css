@@ -263,7 +263,7 @@ html, body {
 
 @media (max-width: 768px) {
   .container {
-    height: calc(var(--vh, 1vh) * 100 - 100px);
+    height: calc(100vh - 100px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
