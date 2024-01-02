@@ -63,6 +63,16 @@ html, body {
   align-items: center;
   border-radius: 5px;
 }
+.contact-nav {
+  background-color: #000;
+  color: #fff;
+  height: 50px;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
 .contact-button, .contact-button a, .menu-button {
   padding: 10px 15px;
   background-color: #f0f0f0;
