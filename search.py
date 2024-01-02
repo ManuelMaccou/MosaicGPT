@@ -139,8 +139,8 @@ def search():
     
     source_cards_data = json.dumps(list(unique_source_cards.values()))
 
-    # context = extract_context(es_data)
-    context = "This is test context"
+    context = extract_context(es_data)
+    # context = "This is test context"
 
     def format_text_to_html(text):
     # Convert bullet points to HTML list items
