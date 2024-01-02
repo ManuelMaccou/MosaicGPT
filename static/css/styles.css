@@ -258,6 +258,12 @@ html, body {
 }
 
 @media (max-width: 768px) {
+  .container {
+    height: calc(var(--vh, 1vh) * 100 - 100px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
   .welcome-popup {
     display: none;
     position: fixed;
