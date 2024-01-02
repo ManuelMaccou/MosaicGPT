@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var sourceMobileContainer = document.getElementById('sourceMobileContainer');
   var tempLanding = document.getElementById('tempLanding');
   var answerContainer = document.getElementById('answerContainer');
-  var closeButton = document.querySelector('.close-button');
+  var closeMobileMenu = document.querySelector('.close-button');
 
   fetch('/page-visit', { method: 'POST' })
     .then(response => response.json())
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
   menuButton.addEventListener('click', function() {
       mobileMenu.classList.toggle('visible');
   });
-  closeButton.addEventListener('click', function() {
+  closeMobileMenu.addEventListener('click', function() {
     mobileMenu.classList.remove('visible');
   });
 

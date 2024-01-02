@@ -63,13 +63,15 @@ html, body {
   align-items: center;
   border-radius: 5px;
 }
-.contact-button, .menu-button {
+.contact-button, .contact-button a, .menu-button {
   padding: 10px 15px;
   background-color: #f0f0f0;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   display: none;
+  text-decoration: none;
+  color: #000;
 }
 .menu-button {
   display: block;
@@ -252,8 +254,10 @@ html, body {
   .menu-button {
     display: none;
   }
-  .contact-button {
+  .contact-button, .contact-button a {
     display: block;
+    text-decoration: none;
+    color: #000;
   }
 }
 
@@ -328,7 +332,7 @@ html, body {
     white-space: normal;
     font-size: 10px;
   }
-  .contact-button-mobile {
+  .contact-button-mobile, .contact-button-mobile a {
     margin: auto;
     margin-bottom: 40px;
     margin-top: 50px;
@@ -339,6 +343,9 @@ html, body {
     border-radius: 5px;
     cursor: pointer;
     display: block;
+    text-decoration: none;
+    text-align: center;
+    color: #000;
   }
   .suggestions {
     display: none;
@@ -347,5 +354,8 @@ html, body {
     width: 100%;
     margin-bottom: 10px;
     font-size: 12px;
+  }
+  .search-container {
+    width: 90%;
   }
 }
