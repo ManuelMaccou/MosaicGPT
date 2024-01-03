@@ -27,6 +27,16 @@ document.addEventListener('DOMContentLoaded', function() {
     setCookie('firstVisit', '1', 7); // Expires in 7 days
   }
 
+  function adjustHeight() {
+    var vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+  
+  window.addEventListener('resize', adjustHeight);
+  window.addEventListener('load', adjustHeight);
+  
+  adjustHeight();
+
   function showPopup() {
     document.getElementById('welcome-popup').style.display = 'flex';
     document.getElementById('overlay').style.display = 'block';
