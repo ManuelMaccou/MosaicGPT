@@ -108,7 +108,6 @@ def search():
         bubble_url = f"https://mosaicnetwork.co/version-test/api/1.1/obj/scrapedContent?constraints=[{{\"key\":\"_id\",\"constraint_type\":\"equals\",\"value\":\"{source_id}\"}}]"
         
         bubble_response = requests.get(bubble_url)
-        logging.info(f"Bubble API Response for ID {source_id}: {bubble_response.json()}")
 
         if bubble_response.status_code == 200:
             record = bubble_response.json()['response']['results'][0]
