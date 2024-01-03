@@ -214,7 +214,7 @@ html, body {
   border-radius: 5px;
   cursor: pointer;
   transition: 0.3s;
-  display: flex;
+  display: none;
   flex-direction: column;
 }
 .source-card img {
