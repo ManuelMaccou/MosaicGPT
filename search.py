@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, Response
+from werkzeug.routing import BaseConverter, ValidationError
 import requests
 from openai import OpenAI
 import os
@@ -14,14 +15,37 @@ logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__, static_folder='static')
 
-es_endpoint = os.getenv("ES_PYMNTS_SEACH_APP_ENDPOINT")
-es_search_app_api = os.getenv("ES_PYMNTS_SEARCH_APP_API")
+es_pymnts_endpoint = os.getenv("ES_PYMNTS_SEACH_APP_ENDPOINT")
+es_pymnts_search_app_api = os.getenv("ES_PYMNTS_SEARCH_APP_API")
+
+es_bankless_endpoint = os.getenv("ES_BANKLESS_SEARCH_APP_ENDPOINT")
+es_bankless_search_app_api = os.getenv("ES_BANKLESS_SEARCH_APP_API")
+
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 bubble_api_key = os.getenv("BUBBLE_API_KEY")
+
+class LowerCaseConverter(BaseConverter):
+    def to_python(self, value):
+        return value.lower()
+
+    def to_url(self, value):
+        return value.lower()
+    
+app.url_map.converters['lowercase'] = LowerCaseConverter
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/<lowercase:path>')
+def catch_all(path):
+    if path == 'pymnts':
+        return render_template('index.html', path='PYMNTS')
+    elif path == 'bankless':
+        return render_template('index.html', path='Bankless')
+    else:
+        return 'Page not found', 404
 
 @app.route('/page-visit', methods=['POST'])
 def trigger_page_visit_api():
@@ -70,8 +94,8 @@ def trigger_gpt_stats_api():
     app.logger.info(f"API Response: {response.text}")
     return jsonify(response.json())
 
-@app.route('/search', methods=['GET', 'POST'])
-def search():
+@app.route('/<lowercase:path>/search', methods=['GET', 'POST'])
+def search(path):
     query = ""
 
     logging.info(f"Received {request.method} request with query: {query}")
@@ -83,6 +107,15 @@ def search():
         query = request.args.get('query', '')
         logging.info(f"Received GET request with query: {query}")
         print(f"Received query: {query}")
+
+    if path == 'pymnts':
+        es_endpoint = es_pymnts_endpoint
+        es_search_app_api = es_pymnts_search_app_api
+    elif path == 'bankless':
+        es_endpoint = es_bankless_endpoint
+        es_search_app_api = es_bankless_search_app_api
+    else:
+        return jsonify({"error": "Invalid path"}), 400
     
     # Elasticsearch request
     es_headers = {
@@ -97,6 +130,8 @@ def search():
     }
     es_response = requests.post(es_endpoint, json=es_body, headers=es_headers)
     es_data = es_response.json()
+    print("Elasticsearch Response:", es_data)
+    
     source_ids = [hit['_source']['id'] for hit in es_data['hits']['hits']]
 
     # print("Elasticsearch Response:", es_data)
@@ -112,7 +147,7 @@ def search():
         if bubble_response.status_code == 200:
             record = bubble_response.json()['response']['results'][0]
 
-            logging.info(f"Data from Bubble for ID {source_id}: {record}")
+            # logging.info(f"Data from Bubble for ID {source_id}: {record}")
 
             image = record.get('image', 'default_image.jpg')
             articleUrl = record.get('articleUrl', '#')
@@ -195,4 +230,7 @@ def extract_context(es_data):
     return context
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if os.getenv('FLASK_ENV') == 'development':
+        app.run(debug=True)
+    else:
+        app.run()
