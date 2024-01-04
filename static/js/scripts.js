@@ -13,7 +13,7 @@ function getCurrentPath() {
 
 function setBranding() {
   const currentPath = getCurrentPath();
-  let logoHeader, logoLanding, primaryColor, secondaryColor, primaryTextColor, secondaryTextColor, landingHeader, questionSuggestion1, questionSuggestion2, questionSuggestion3, questionSuggestion4, feedbackLink;
+  let logoHeader, logoLanding, primaryColor, secondaryColor, primaryTextColor, secondaryTextColor, landingHeader, questionSuggestion1, questionSuggestion2, questionSuggestion3, questionSuggestion4, feedbackLink, welcomePopupTitle, welcomePopupText;
 
   if (currentPath === 'PYMNTS') {
       logoHeader = 'Logos/PYMNTS/PYMNTS_2023_logo_white.svg';
@@ -28,6 +28,8 @@ function setBranding() {
       questionSuggestion3 = "Which international markets are ideal for financial expansion now?";
       questionSuggestion4 = "How do we add ESG criteria into our investment decisions?";
       feedbackLink = 'https://forms.gle/RaY8EfdZtBMPv3fZ7'
+      welcomePopupTitle = "PYMNTS GPT Demo";
+      welcomePopupText = "This is a simple demo to provide an early idea of what an AI assistant could provide the PYMNTS community. We invite you to try it out and let us know what you think. This demo was made by the Mosaic team for demo purposes only and is not affiliated with PYMNTS in any way.";
   } else if (currentPath === 'Bankless') {
       logoHeader = 'Logos/Bankless/bankless_icon.png';
       logoLanding = 'Logos/Bankless/bankless_icon.png';
@@ -41,11 +43,18 @@ function setBranding() {
       questionSuggestion3 = "What challenges is OpenSea facing?";
       questionSuggestion4 = "How does Vitalik feel about AI?";
       feedbackLink = 'https://t.me/+QyptfCagmwRjMmEx'
+      welcomePopupTitle = "BanklessGPT Demo"
+      welcomePopupText = "This is a basic demo of an AI assistant with knowledge of all things Bankless. This was created by the team at Mosaic, and does not have any official affiliation with Bankless. The purpose of this demo is to learn what the world of crypto is interested in learning, so we may save the questions you ask. DO NOT SHARE ANY PERSONAL INFORMATION. We will take your feedback to make this GPT more useful.";
   }
 
   // Set logos
   document.querySelector('.header-logo').src = '/static/' + logoHeader;
   document.querySelector('.landing-logo').src = '/static/' + logoLanding;
+
+  // Set Welcome Popup
+  document.querySelector('.popup-content h2').textContent = welcomePopupTitle;
+  document.querySelector('.popup-content p').textContent = welcomePopupText;
+
 
   // Set landing h1
   document.querySelector('.landing h1').textContent = landingHeader;
@@ -97,9 +106,12 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error making the API call:', error);
     });
   
-  if (!getCookie('firstVisit')) {
+  var currentPath = getCurrentPath();
+  var cookieNameSuffix = currentPath ? '_' + currentPath : '';
+  
+  if (!getCookie('firstVisit', cookieNameSuffix)) {
     showPopup();
-    setCookie('firstVisit', '1', 7); // Expires in 7 days
+    setCookie('firstVisit', '1', 7, cookieNameSuffix); // Expires in 7 days
   }
 
   function adjustHeight() {
@@ -127,18 +139,18 @@ document.addEventListener('DOMContentLoaded', function() {
       closeButton.addEventListener('click', closePopup);
   }
   
-  function setCookie(name, value, days) {
+  function setCookie(name, value, days, pathSuffix) {
     var expires = '';
     if (days) {
       var date = new Date();
       date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
       expires = '; expires=' + date.toUTCString();
     }
-    document.cookie = name + '=' + (value || '') + expires + '; path=/';
-  }
+    document.cookie = name + pathSuffix + '=' + (value || '') + expires + '; path=/';
+}
   
-  function getCookie(name) {
-    var nameEQ = name + '=';
+  function getCookie(name, pathSuffix) {
+    var nameEQ = name + pathSuffix + '=';
     var ca = document.cookie.split(';');
     for (var i = 0; i < ca.length; i++) {
       var c = ca[i];
@@ -146,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
-  }
+}
 
   function sendDataToGptStats(query, elasticSearchSources) {
     fetch('/gpt-stats', {

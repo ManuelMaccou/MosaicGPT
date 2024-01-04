@@ -44,6 +44,7 @@ html, body {
   background-color: var(--secondary-color);
   border-radius: 5px;
   cursor: pointer;
+  border-style: none;
 }
 .container {
   height: calc(var(--vh, 1vh) * 100 - 70px);
