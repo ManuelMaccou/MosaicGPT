@@ -1,15 +1,14 @@
 function getCurrentPath() {
-  const pathName = window.location.pathname;
+  const pathName = window.location.pathname.toLowerCase();
   console.log("Current path:", pathName);
-  if (pathName.includes('PYMNTS')) {
-      return 'PYMNTS';
-  } else if (pathName.includes('Bankless')) {
-      return 'Bankless';
-  } else {
-      // Handle the case where the path is neither
-      console.error('Invalid path');
-      return null;
-  }
+  if (pathName.includes('pymnts')) {
+        return 'PYMNTS';
+    } else if (pathName.includes('bankless')) {
+        return 'Bankless';
+    } else {
+        console.error('Invalid path');
+        return null;
+    }
 }
 
 function setBranding() {
