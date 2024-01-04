@@ -1,5 +1,6 @@
 function getCurrentPath() {
   const pathName = window.location.pathname;
+  console.log("Current path:", pathName);
   if (pathName.includes('PYMNTS')) {
       return 'PYMNTS';
   } else if (pathName.includes('Bankless')) {
