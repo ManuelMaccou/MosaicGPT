@@ -6,6 +6,7 @@ import os
 import traceback
 import json
 import logging
+import base64
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -14,6 +15,10 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__, static_folder='static')
+
+es_username = os.getenv("ES_USERNAME")
+es_password = os.getenv("ES_PASSWORD")
+es_basic_auth_header = 'Basic ' + base64.b64encode(f'{es_username}:{es_password}'.encode()).decode()
 
 es_pymnts_endpoint = os.getenv("ES_PYMNTS_SEACH_APP_ENDPOINT")
 es_pymnts_search_app_api = os.getenv("ES_PYMNTS_SEARCH_APP_API")
@@ -219,6 +224,126 @@ def search(path):
             yield f"data: Error: {str(e)}\n\n"
 
     return Response(generate(), content_type='text/event-stream')
+
+@app.route('/<lowercase:path>/recent-articles-search', methods=['GET'])
+def recent_articles_search(path):
+    num_recent_articles = request.args.get('num_recent_articles', type=int)
+
+    # Define Elasticsearch index based on path
+    if path == 'pymnts':
+        es_index = 'search-pymnts'
+    elif path == 'bankless':
+        es_index = 'search-bankless-2'
+    else:
+        return jsonify({"error": "Invalid path"}), 400
+    
+    es_headers = {
+        "Content-Type": "application/json",
+        "Authorization": es_basic_auth_header
+    }
+    
+    es_query = {
+        "id": "recent_articles_search_template",
+        "params": {
+            "num_recent_articles": num_recent_articles
+        }
+    }
+
+    es_response = requests.get(f'https://my-deployment-7cce90.es.us-east-2.aws.elastic-cloud.com/{es_index}/_search/template',
+                               json=es_query, headers=es_headers)
+    es_data = es_response.json()
+    for hit in es_data['hits']['hits']:
+        title = hit['_source']['title']
+        app.logger.info(f"Title: {title}")
+
+    source_ids = [hit['_source']['id'] for hit in es_data['hits']['hits']]
+
+    # print("Elasticsearch Response:", es_data)
+    # logging.info(f"Elasticsearch Response: {es_data}")
+
+    unique_source_cards = {}
+    for source_id in source_ids:
+        # Construct the request to Bubble API
+        bubble_url = f"https://mosaicnetwork.co/version-test/api/1.1/obj/scrapedContent?constraints=[{{\"key\":\"_id\",\"constraint_type\":\"equals\",\"value\":\"{source_id}\"}}]"
+        
+        bubble_response = requests.get(bubble_url)
+
+        if bubble_response.status_code == 200:
+            record = bubble_response.json()['response']['results'][0]
+
+            # logging.info(f"Data from Bubble for ID {source_id}: {record}")
+
+            image = record.get('image', 'default_image.jpg')
+            articleUrl = record.get('articleUrl', '#')
+            title = record.get('title')
+
+            unique_key = title
+            
+            if unique_key not in unique_source_cards:
+                source_card = {
+                    "image": image,
+                    "articleUrl": articleUrl,
+                    "title": title
+                }
+                unique_source_cards[unique_key] = source_card
+                
+                logging.info(f"Constructed source card: {unique_source_cards}")
+
+        else:
+            logging.error(f"Failed to fetch data from Bubble for source ID {source_id}: {bubble_response.status_code}")
+
+    # Log all the source cards after processing
+    # logging.info(f"All source cards: {unique_source_cards}")
+    
+    source_cards_data = json.dumps(list(unique_source_cards.values()))
+
+    context = extract_context(es_data)
+    # context = "This is test context"
+
+    def format_text_to_html(text):
+    # Convert bullet points to HTML list items
+       # if text.startswith("-"):
+            # text = "<ul>" + "".join(f"<li>{line[2:]}</li>" for line in text.split("\n") if line.startswith("-")) + "</ul>"
+
+        # Convert quotes to blockquotes
+        # text = text.replace('"', '<blockquote>').replace('"', '</blockquote>', 1)
+
+        # Replace newline characters with HTML line breaks
+        text = text.replace("\n", "<br>")
+
+        return text
+    
+    # Stream response from OpenAI
+    def generate():
+        yield f"data: {source_cards_data}\n\n"
+
+        try:
+            stream = openai_client.chat.completions.create(
+                model="gpt-4-1106-preview",
+                messages=[
+                    {"role": "system", "content": "You are an expert in the payments, finance, and crypto industries, and love teaching people all about it. When questions come in, give a helpful answer, but keep responses concise and to the point. You'll receive extra content with each question that you can use as context. Your answers should focus on the provided context, but you can also use your own knowledge when necessary to provide the user with a great answer. It's ok for you to give advice. Give actionabe reponses while helping the user understand nuances or considerations they should take into effect."},
+                    {"role": "user", "content": f"Using the following context, answer this question: 'What is the latest news?'. Here is the extra context: {context}"}
+                ],
+                stream=True
+            )
+            for chunk in stream:
+                content = chunk.choices[0].delta.content
+                if content:
+                    formatted_content = format_text_to_html(content)
+                    yield f"data: {formatted_content}\n\n"
+                if 'done' in chunk:  # Check if 'done' token is present
+                    yield "data: [DONE]\n\n"
+                    break
+                    
+        except Exception as e:
+            logging.error(f"Streaming error: {traceback.format_exc()}")
+            error_info = traceback.format_exc()
+            print(f"Error occurred: {e}")
+            print(f"Error occurred during streaming: {error_info}")
+            yield f"data: Error: {str(e)}\n\n"
+
+    return Response(generate(), content_type='text/event-stream')
+
 
 def extract_context(es_data):
     context = ''

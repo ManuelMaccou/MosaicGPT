@@ -15,6 +15,15 @@ function setBranding() {
   const currentPath = getCurrentPath();
   let logoHeader, logoLanding, primaryColor, secondaryColor, primaryTextColor, secondaryTextColor, landingHeader, questionSuggestion1, questionSuggestion2, questionSuggestion3, questionSuggestion4, feedbackLink, welcomePopupTitle, welcomePopupText;
 
+  const recentArticlesButtons = document.querySelectorAll('.recent-articles-button');
+  recentArticlesButtons.forEach(button => {
+    if (currentPath === 'PYMNTS' || currentPath === 'Bankless') {
+      button.style.display = 'block';
+    } else {
+      button.style.display = 'none';
+    }
+  });
+
   if (currentPath === 'PYMNTS') {
       logoHeader = 'Logos/PYMNTS/PYMNTS_2023_logo_white.svg';
       logoLanding = 'Logos/PYMNTS/PYMNTS_2022_logo_medium_green.svg';
@@ -23,10 +32,10 @@ function setBranding() {
       primaryTextColor = '#000000';
       secondaryTextColor = '#FFFFFF';
       landingHeader = 'Explore the world of Payments';
+      recentArticlesQuery = "What is the latest news from PYMNTS?";
       questionSuggestion1 = "How can we improve our risk management for digital currencies?";
-      questionSuggestion2 = "What's the best way to integrate blockchain into our payment systems?";
-      questionSuggestion3 = "Which international markets are ideal for financial expansion now?";
-      questionSuggestion4 = "How do we add ESG criteria into our investment decisions?";
+      questionSuggestion2 = "Which international markets are ideal for financial expansion now?";
+      questionSuggestion3 = "How do we add ESG criteria into our investment decisions?";
       feedbackLink = 'https://forms.gle/RaY8EfdZtBMPv3fZ7'
       welcomePopupTitle = "PYMNTS GPT Demo";
       welcomePopupText = "This is a simple demo to provide an early idea of what an AI assistant could provide the PYMNTS community. We invite you to try it out and let us know what you think. This demo was made by the Mosaic team for demo purposes only and is not affiliated with PYMNTS in any way.";
@@ -38,10 +47,10 @@ function setBranding() {
       primaryTextColor = '#FFFFFF';
       secondaryTextColor = '#FFFFFF';
       landingHeader = 'Explore web3 with Bankless';
-      questionSuggestion1 = "What is the latest news in crypto?";
-      questionSuggestion2 = "What are some investment opportunities in the current market?";
-      questionSuggestion3 = "What challenges is OpenSea facing?";
-      questionSuggestion4 = "How does Vitalik feel about AI?";
+      recentArticlesQuery = "What is the latest news in crypto?";
+      questionSuggestion1 = "What are some investment opportunities in the current market?";
+      questionSuggestion2 = "What challenges is OpenSea facing?";
+      questionSuggestion3 = "How does Vitalik feel about AI?";
       feedbackLink = 'https://t.me/+QyptfCagmwRjMmEx'
       welcomePopupTitle = "BanklessGPT Demo"
       welcomePopupText = "This is a basic demo of an AI assistant with knowledge of all things Bankless. This was created by the team at Mosaic, and does not have any official affiliation with Bankless. The purpose of this demo is to learn what the world of crypto is interested in learning, so we may save the questions you ask. DO NOT SHARE ANY PERSONAL INFORMATION. We will take your feedback to make this GPT more useful.";
@@ -60,14 +69,15 @@ function setBranding() {
   document.querySelector('.landing h1').textContent = landingHeader;
 
   // Set suggesetion questions
+  document.getElementById('recentArticlesm').textContent = recentArticlesQuery;
   document.getElementById('suggestion1m').textContent = questionSuggestion1;
   document.getElementById('suggestion2m').textContent = questionSuggestion2;
   document.getElementById('suggestion3m').textContent = questionSuggestion3;
-  document.getElementById('suggestion4m').textContent = questionSuggestion4;
+  document.getElementById('recentArticles').textContent = recentArticlesQuery;
   document.getElementById('suggestion1').textContent = questionSuggestion1;
   document.getElementById('suggestion2').textContent = questionSuggestion2;
   document.getElementById('suggestion3').textContent = questionSuggestion3;
-  document.getElementById('suggestion4').textContent = questionSuggestion4;
+
 
   // Set feedback link
   document.getElementById('feedback').href = feedbackLink;
@@ -92,9 +102,30 @@ document.addEventListener('DOMContentLoaded', function() {
   var answerContainer = document.getElementById('answerContainer');
   var closeMobileMenu = document.querySelector('.close-button');
 
+  var closeButton = document.querySelector('.welcome-popup-button');
+    if (closeButton) {
+      closeButton.addEventListener('click', closePopup);
+  }
+
+  var recentArticlesClicked = false;
+  var recentArticlesButtons = document.querySelectorAll('.recent-articles-button');
+  recentArticlesButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      recentArticlesClicked = true;
+      // handleRecentArticlesClick();
+    });
+  });
+
+  var currentPath = getCurrentPath();
+  var cookieNameSuffix = currentPath ? '_' + currentPath : '';
+  if (!getCookie('firstVisit', cookieNameSuffix)) {
+    showPopup();
+    setCookie('firstVisit', '1', 7, cookieNameSuffix); // Expires in 7 days
+  }
+
   setBranding();
 
-  fetch('/page-visit', { method: 'POST' })
+  fetch('/page-visit', { method: 'POST' })  
     .then(response => response.json())
     .then(text => {
       console.log("Received response:", text);
@@ -105,14 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
         console.error('Error making the API call:', error);
     });
-  
-  var currentPath = getCurrentPath();
-  var cookieNameSuffix = currentPath ? '_' + currentPath : '';
-  
-  if (!getCookie('firstVisit', cookieNameSuffix)) {
-    showPopup();
-    setCookie('firstVisit', '1', 7, cookieNameSuffix); // Expires in 7 days
-  }
 
   function adjustHeight() {
     var vh = window.innerHeight * 0.01;
@@ -133,11 +156,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('welcome-popup').style.display = 'none';
     document.getElementById('overlay').style.display = 'none';
   }
-
-  var closeButton = document.querySelector('.welcome-popup-button');
-    if (closeButton) {
-      closeButton.addEventListener('click', closePopup);
-  }
   
   function setCookie(name, value, days, pathSuffix) {
     var expires = '';
@@ -147,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
       expires = '; expires=' + date.toUTCString();
     }
     document.cookie = name + pathSuffix + '=' + (value || '') + expires + '; path=/';
-}
+  }
   
   function getCookie(name, pathSuffix) {
     var nameEQ = name + pathSuffix + '=';
@@ -158,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
-}
+  }
 
   function sendDataToGptStats(query, elasticSearchSources) {
     fetch('/gpt-stats', {
@@ -181,6 +199,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
+  // Start code for recent news button
+/*
+  function handleRecentArticlesClick() {
+    var currentPath = getCurrentPath();
+    var numRecentArticles;
+
+    if (currentPath === 'PYMNTS') {
+        numRecentArticles = 20;
+    } else if (currentPath === 'Bankless') {
+        numRecentArticles = 10;
+    } else {
+        console.error('Recent articles button not supported for this path');
+        return;
+    }
+
+    // Send the GET request to the new Flask route
+    fetch(`/${currentPath.toLowerCase()}/recent-articles-search?num_recent_articles=${numRecentArticles}`)
+    .then(response => response.json())
+    .then(data => {
+        console.log('Response for recent articles:', data);
+        // Process and display the data
+        // This could involve updating the DOM with the received articles
+    })
+    .catch(error => {
+        console.error('Error fetching recent articles:', error);
+    });
+}
+*/
+// End code for recent news button
+
   menuButton.addEventListener('click', function() {
       mobileMenu.classList.toggle('visible');
   });
@@ -195,6 +243,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         mobileMenu.classList.remove('visible');
     });
+});
+
+recentArticlesButtons.forEach(button => {
+  button.addEventListener('click', function() {
+      // searchInput.value = this.textContent; // Set the search input value to the button's text
+      searchButton.click(); // Programmatically click the search button
+
+      mobileMenu.classList.remove('visible');
+  });
 });
 
   searchInput.addEventListener('keypress', function(event) {
@@ -224,7 +281,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return; // Exit the function if the path is not valid
     }
 
-    var stream = new EventSource('/' + currentPath + '/search?query=' + encodeURIComponent(query));
+    if (recentArticlesClicked) {
+      var numRecentArticles = currentPath === 'PYMNTS' ? 20 : currentPath === 'Bankless' ? 10 : null;
+      if (!numRecentArticles) {
+          console.error('Recent articles button not supported for this path');
+          return;
+      }
+      var stream = new EventSource('/' + currentPath + '/recent-articles-search?num_recent_articles=' + numRecentArticles)
+      recentArticlesClicked = false; // Reset the flag
+    } else {
+      var stream = new EventSource('/' + currentPath + '/search?query=' + encodeURIComponent(query));
+    }
 
     var receivedSourceCards = false;
 

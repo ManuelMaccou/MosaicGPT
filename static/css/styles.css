@@ -183,7 +183,19 @@ html, body {
   margin-top: 20px;
 }
 .suggestion-button {
-  width: calc(50% - 20px);
+  width: calc(50% - 120px);
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: var(--secondary-color);
+  color: var(--secondary-text-color);
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  border-style: none;
+}
+.recent-articles-button {
+  display: none;
+  width: calc(50% - 120px);
   padding: 10px;
   margin-bottom: 10px;
   background-color: var(--secondary-color);
@@ -371,6 +383,11 @@ html, body {
     display: none;
   }
   .suggestion-button {
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 12px;
+  }
+  .recent-articles-button{
     width: 100%;
     margin-bottom: 10px;
     font-size: 12px;
