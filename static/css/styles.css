@@ -299,6 +299,9 @@ html, body {
     flex-direction: column;
     justify-content: space-between;
   }
+  .header-logo {
+    max-height: 40px;
+  }
   .welcome-popup {
     display: none;
     position: fixed;
