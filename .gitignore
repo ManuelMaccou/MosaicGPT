@@ -6,3 +6,4 @@ test.json
 Elasticsearch-code.json
 csv-files/
 failed_indexing.csv
+scraper-templates.json

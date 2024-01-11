@@ -125,6 +125,9 @@ def search(path):
     elif path == 'bankless':
         es_index = 'search-bankless'
         search_template_id = 'standard_blog_search_template'
+    elif path == 'paymentsjournal':
+        es_index = 'search-payments-journal'
+        search_template_id = 'standard_blog_search_template'
     elif path == 'polkadot':
         es_index = 'search-polkadot'
         search_template_id = 'standard_docs_search_template'
@@ -234,6 +237,8 @@ def recent_articles_search(path):
         es_index = 'search-pymnts'
     elif path == 'bankless':
         es_index = 'search-bankless'
+    elif path == 'paymentsjournal':
+        es_index = 'search-payments-journal'
     else:
         return jsonify({"error": "Invalid path"}), 400
     
