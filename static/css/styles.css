@@ -53,7 +53,7 @@ html, body {
   justify-content: space-between;
 }
 .header {
-  background-color: #000;
+  background-color: var(--header-color);
   color: #fff;
   height: 50px;
   padding: 10px 20px;
@@ -85,6 +85,7 @@ html, body {
   display: none;
   text-decoration: none;
   color: #000;
+  border-style: none;
 }
 .menu-button {
   display: block;
@@ -92,7 +93,6 @@ html, body {
 .main-container {
   width: 70%;
   margin: auto;
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -137,6 +137,7 @@ html, body {
   overflow-y: auto;
   padding-left: 20px;
   padding-right: 20px;
+  margin-top: 20px;
   scrollbar-width: none;
 }
 .answer-container::-webkit-scrollbar, .source-column::-webkit-scrollbar {
@@ -215,9 +216,10 @@ html, body {
 }
 .source-card {
   background-color: var(--primary-color);
-  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.2);
+  box-shadow: 3px 3px 7px 2px rgb(142 142 142 / 30%);
   margin-bottom: 20px;
   border-radius: 5px;
+  border: 1px solid #a5a5a561;
   cursor: pointer;
   transition: 0.3s;
   display: flex;
@@ -239,9 +241,6 @@ html, body {
   object-fit: cover;
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
-}
-.source-card:hover {
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
 }
 .source-text{
   padding: 10px;
@@ -326,6 +325,7 @@ html, body {
   }
   .answer-container {
     padding: 0;
+    margin-top: 20px;
     font-size: 13px;
     order: 1;
     overflow-y: unset;

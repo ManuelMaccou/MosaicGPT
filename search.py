@@ -49,6 +49,10 @@ def catch_all(path):
         return render_template('index.html', path='PYMNTS')
     elif path == 'bankless':
         return render_template('index.html', path='Bankless')
+    elif path == 'paymentsjournal':
+        return render_template('index.html', path='PaymentsJournal')
+    elif path == 'polkadot':
+        return render_template('index.html', path='Polkadot')
     else:
         return 'Page not found', 404
 
@@ -99,6 +103,7 @@ def trigger_gpt_stats_api():
     app.logger.info(f"API Response: {response.text}")
     return jsonify(response.json())
 
+# Standard search
 @app.route('/<lowercase:path>/search', methods=['GET', 'POST'])
 def search(path):
     query = ""
@@ -113,71 +118,65 @@ def search(path):
         logging.info(f"Received GET request with query: {query}")
         print(f"Received query: {query}")
 
+    # Define Elasticsearch index and search template based on path
     if path == 'pymnts':
-        es_endpoint = es_pymnts_endpoint
-        es_search_app_api = es_pymnts_search_app_api
+        es_index = 'search-pymnts'
+        search_template_id = 'standard_blog_search_template'
     elif path == 'bankless':
-        es_endpoint = es_bankless_endpoint
-        es_search_app_api = es_bankless_search_app_api
+        es_index = 'search-bankless'
+        search_template_id = 'standard_blog_search_template'
+    elif path == 'polkadot':
+        es_index = 'search-polkadot'
+        search_template_id = 'standard_docs_search_template'
     else:
         return jsonify({"error": "Invalid path"}), 400
     
-    # Elasticsearch request
     es_headers = {
         "Content-Type": "application/json",
-        "Authorization": f"apiKey {es_search_app_api}"
+        "Authorization": es_basic_auth_header
     }
-    es_body = {
+    
+    es_query = {
+        "id": search_template_id,
         "params": {
             "knn_query": query,
-            "text_query": query
+            "text_query": query,
+            "k": 10,
+            "num_candidates": 100,
+            "rrf_window_size": 50,
+            "rrf_rank_constant": 20
             }
-    }
-    es_response = requests.post(es_endpoint, json=es_body, headers=es_headers)
-    es_data = es_response.json()
-    print("Elasticsearch Response:", es_data)
-    
-    source_ids = [hit['_source']['id'] for hit in es_data['hits']['hits']]
+        }
 
-    # print("Elasticsearch Response:", es_data)
-    # logging.info(f"Elasticsearch Response: {es_data}")
+    es_response = requests.get(f'https://my-deployment-7cce90.es.us-east-2.aws.elastic-cloud.com/{es_index}/_search/template',
+                               json=es_query, headers=es_headers)
+    es_data = es_response.json()
 
     unique_source_cards = {}
-    for source_id in source_ids:
-        # Construct the request to Bubble API
-        bubble_url = f"https://mosaicnetwork.co/version-test/api/1.1/obj/scrapedContent?constraints=[{{\"key\":\"_id\",\"constraint_type\":\"equals\",\"value\":\"{source_id}\"}}]"
-        
-        bubble_response = requests.get(bubble_url)
+    if 'hits' in es_data and 'hits' in es_data['hits']:
+        for hit in es_data['hits']['hits']:
+            source_data = hit['_source']
+            title = source_data.get('title')
+            image = source_data.get('image')
+            articleUrl = source_data.get('articleUrl')
 
-        if bubble_response.status_code == 200:
-            record = bubble_response.json()['response']['results'][0]
-
-            # logging.info(f"Data from Bubble for ID {source_id}: {record}")
-
-            image = record.get('image', 'default_image.jpg')
-            articleUrl = record.get('articleUrl', '#')
-            title = record.get('title')
+            app.logger.info(f"Title: {title}")
 
             unique_key = title
-            
             if unique_key not in unique_source_cards:
                 source_card = {
                     "image": image,
                     "articleUrl": articleUrl,
                     "title": title
                 }
-            unique_source_cards[unique_key] = source_card
-
-            # logging.info(f"Constructed source card: {unique_source_cards}")
-
-        else:
-            logging.error(f"Failed to fetch data from Bubble for source ID {source_id}: {bubble_response.status_code}")
-
-            # Log all the source cards after processing
-            # logging.info(f"All source cards: {unique_source_cards}")
+                unique_source_cards[unique_key] = source_card
+    else:
+        print("Error: 'hits' key not found or no results in Elasticsearch response.")
+        print(es_data)
+        return jsonify({"error": "No results found"}), 404
     
     source_cards_data = json.dumps(list(unique_source_cards.values()))
-
+    
     context = extract_context(es_data)
     # context = "This is test context"
 
@@ -202,7 +201,7 @@ def search(path):
             stream = openai_client.chat.completions.create(
                 model="gpt-4-1106-preview",
                 messages=[
-                    {"role": "system", "content": "You are an expert in the payments and finance industries, and love teaching people all about it. When questions come in, give a helpful answer, but keep responses concise and to the point. You'll receive extra content with each question that you can use as context. Your answers should focus on the provided context, but you can also use your own knowledge when necessary to provide the user with a great answer. It's ok for you to give advice. Give actionabe reponses while helping the user understand nuances or considerations they should take into effect."},
+                    {"role": "system", "content": "You are an AI assistant with expertise in the payments, finance, and crypto industries. When questions come in, give a helpful answer, but keep responses concise and to the point. You'll receive extra content with each question that you can use as context. If the provided context does not answer the question, you can use your existing knowledge, you can say something like, 'I don't have knowledge of that.' Never apologize. The user should not know that you were provided extra context. It's ok for you to give advice. Give actionabe reponses while helping the user understand nuances or considerations they should take into effect."},
                     {"role": "user", "content": f"Using the following context, answer this question: '{query}'. Here is the extra context: {context}"}
                 ],
                 stream=True
@@ -225,6 +224,7 @@ def search(path):
 
     return Response(generate(), content_type='text/event-stream')
 
+# Most recent article search
 @app.route('/<lowercase:path>/recent-articles-search', methods=['GET'])
 def recent_articles_search(path):
     num_recent_articles = request.args.get('num_recent_articles', type=int)
@@ -233,7 +233,7 @@ def recent_articles_search(path):
     if path == 'pymnts':
         es_index = 'search-pymnts'
     elif path == 'bankless':
-        es_index = 'search-bankless-2'
+        es_index = 'search-bankless'
     else:
         return jsonify({"error": "Invalid path"}), 400
     
@@ -256,29 +256,20 @@ def recent_articles_search(path):
         title = hit['_source']['title']
         app.logger.info(f"Title: {title}")
 
-    source_ids = [hit['_source']['id'] for hit in es_data['hits']['hits']]
-
     # print("Elasticsearch Response:", es_data)
     # logging.info(f"Elasticsearch Response: {es_data}")
 
     unique_source_cards = {}
-    for source_id in source_ids:
-        # Construct the request to Bubble API
-        bubble_url = f"https://mosaicnetwork.co/version-test/api/1.1/obj/scrapedContent?constraints=[{{\"key\":\"_id\",\"constraint_type\":\"equals\",\"value\":\"{source_id}\"}}]"
-        
-        bubble_response = requests.get(bubble_url)
+    if 'hits' in es_data and 'hits' in es_data['hits']:
+        for hit in es_data['hits']['hits']:
+            source_data = hit['_source']
+            title = source_data.get('title')
+            image = source_data.get('image')
+            articleUrl = source_data.get('articleUrl')
 
-        if bubble_response.status_code == 200:
-            record = bubble_response.json()['response']['results'][0]
-
-            # logging.info(f"Data from Bubble for ID {source_id}: {record}")
-
-            image = record.get('image', 'default_image.jpg')
-            articleUrl = record.get('articleUrl', '#')
-            title = record.get('title')
+            app.logger.info(f"Title: {title}")
 
             unique_key = title
-            
             if unique_key not in unique_source_cards:
                 source_card = {
                     "image": image,
@@ -286,14 +277,10 @@ def recent_articles_search(path):
                     "title": title
                 }
                 unique_source_cards[unique_key] = source_card
-                
-                logging.info(f"Constructed source card: {unique_source_cards}")
-
-        else:
-            logging.error(f"Failed to fetch data from Bubble for source ID {source_id}: {bubble_response.status_code}")
-
-    # Log all the source cards after processing
-    # logging.info(f"All source cards: {unique_source_cards}")
+    else:
+        print("Error: 'hits' key not found or no results in Elasticsearch response.")
+        print(es_data)
+        return jsonify({"error": "No results found"}), 404
     
     source_cards_data = json.dumps(list(unique_source_cards.values()))
 
@@ -321,7 +308,7 @@ def recent_articles_search(path):
             stream = openai_client.chat.completions.create(
                 model="gpt-4-1106-preview",
                 messages=[
-                    {"role": "system", "content": "You are an expert in the payments, finance, and crypto industries, and love teaching people all about it. When questions come in, give a helpful answer, but keep responses concise and to the point. You'll receive extra content with each question that you can use as context. Your answers should focus on the provided context, but you can also use your own knowledge when necessary to provide the user with a great answer. It's ok for you to give advice. Give actionabe reponses while helping the user understand nuances or considerations they should take into effect."},
+                    {"role": "system", "content": "You are an AI assistant with expertise in the payments, finance, and crypto industries. When questions come in, give a helpful answer, but keep responses concise and to the point. You'll receive extra content with each question that you can use as context. The user should not know that you were provided extra context."},
                     {"role": "user", "content": f"Using the following context, answer this question: 'What is the latest news?'. Here is the extra context: {context}"}
                 ],
                 stream=True
@@ -348,7 +335,7 @@ def recent_articles_search(path):
 def extract_context(es_data):
     context = ''
     for hit in es_data['hits']['hits']:
-        article_url = hit['_source'].get('articleURL', '')
+        article_url = hit['_source'].get('articleUrl', '')
         chunked_content = hit['_source'].get('chunkedContent', '')
         # Adding a separator between hits
         context += f"Article URL: {article_url}. Excerpt: {chunked_content}\n\n---\n\n"
