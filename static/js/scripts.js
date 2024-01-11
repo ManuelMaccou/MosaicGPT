@@ -69,7 +69,7 @@ function setBranding() {
     secondaryTextColor = '#FFFFFF';
     landingHeader = 'Explore the world of finance';
     recentArticlesQuery = "What is the latest news from PaymentsJournal?";
-    questionSuggestion1 = "What are the major trends observed among credit card issuers at the end of 2023?";
+    questionSuggestion1 = "How has AI technology impacted the payments industry?";
     questionSuggestion2 = "What impact does consumer sentiment have on their financial decisions and behaviors?";
     questionSuggestion3 = "What are the key trends and statistics observed in the buy now, pay later market?";
     feedbackLink = 'https://forms.gle/RaY8EfdZtBMPv3fZ7'
