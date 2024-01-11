@@ -299,7 +299,7 @@ html, body {
     flex-direction: column;
     justify-content: space-between;
   }
-  .header-logo {
+  .header .header-logo {
     max-height: 40px;
   }
   .welcome-popup {
