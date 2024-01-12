@@ -204,7 +204,7 @@ def search(path):
             stream = openai_client.chat.completions.create(
                 model="gpt-4-1106-preview",
                 messages=[
-                    {"role": "system", "content": "You are an AI assistant with expertise in the payments, finance, and crypto industries. When questions come in, give a helpful answer, but keep responses concise and to the point. You'll receive extra content with each question that you can use as context. If the provided context does not answer the question, you can use your existing knowledge, you can say something like, 'I don't have knowledge of that.' Never apologize. The user should not know that you were provided extra context. It's ok for you to give advice. Give actionabe reponses while helping the user understand nuances or considerations they should take into effect."},
+                    {"role": "system", "content": "You are an AI assistant with expertise in the payments, finance, and crypto industries. When questions come in, give a helpful answer, but keep responses concise and to the point. You'll receive extra content with each question that you can use as context. If the provided context does not answer the question, you can use your existing knowledge, you can say something like, 'I don't have knowledge of that.' Never apologize. Occasionally provide examples or quotes from the provided context. It's ok for you to give advice. Give actionabe reponses while helping the user understand nuances or considerations they should take into effect."},
                     {"role": "user", "content": f"Using the following context, answer this question: '{query}'. Here is the extra context: {context}"}
                 ],
                 stream=True
@@ -313,7 +313,7 @@ def recent_articles_search(path):
             stream = openai_client.chat.completions.create(
                 model="gpt-4-1106-preview",
                 messages=[
-                    {"role": "system", "content": "You are an AI assistant with expertise in the payments, finance, and crypto industries. When questions come in, give a helpful answer, but keep responses concise and to the point. You'll receive extra content with each question that you can use as context. The user should not know that you were provided extra context."},
+                    {"role": "system", "content": "You are an AI assistant with expertise in the payments, finance, and crypto industries. When questions come in, give a helpful answer, but keep responses concise and to the point. You'll receive extra content with each question that you can use as context. Occassionaly give examples or quotes from the context in your answer."},
                     {"role": "user", "content": f"Using the following context, answer this question: 'What is the latest news?'. Here is the extra context: {context}"}
                 ],
                 stream=True
@@ -340,10 +340,11 @@ def recent_articles_search(path):
 def extract_context(es_data):
     context = ''
     for hit in es_data['hits']['hits']:
-        article_url = hit['_source'].get('articleUrl', '')
+        title = hit['_source'].get('title', '')
+        client = hit['_source'].get('client', '')
         chunked_content = hit['_source'].get('chunkedContent', '')
         # Adding a separator between hits
-        context += f"Article URL: {article_url}. Excerpt: {chunked_content}\n\n---\n\n"
+        context += f"Here is an excerpt from '{client}' titled '{title}'  Excerpt: {chunked_content}\n\n---\n\n"
     return context
 
 if __name__ == '__main__':
