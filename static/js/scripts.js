@@ -8,6 +8,8 @@ function getCurrentPath() {
       return 'PaymentsJournal';
     } else if (pathName.includes('polkadot')) {
       return 'Polkadot';
+    } else if (pathName.includes('linea')) {
+      return 'Linea';
     } else {
         console.error('Invalid path');
         return null;
@@ -90,6 +92,21 @@ function setBranding() {
     feedbackLink = 'https://t.me/+QyptfCagmwRjMmEx'
     welcomePopupTitle = "PolkadotGPT"
     welcomePopupText = "This is a basic demo of an AI assistant with knowledge of all things Polkadot. This was created by the team at Mosaic, and does not have any official affiliation with Polkadot. The purpose of this demo is to learn what the world of crypto is interested in learning, so we may save the questions you ask. DO NOT SHARE ANY PERSONAL INFORMATION. We will take your feedback to make this GPT more useful.";
+  } else if (currentPath === 'Linea') {
+    logoHeader = 'Logos/Linea/Logomark Black BG.png';
+    headerColor = '#000000';
+    logoLanding = 'Logos/Linea/Wordmark Black BG.png';
+    primaryColor = '#000000';
+    secondaryColor = '#62DFFF';
+    primaryTextColor = '#FFFFFF';
+    secondaryTextColor = '#000000';
+    landingHeader = 'Explore the Linea ecosystem';
+    questionSuggestion1 = "What is a zkEVM?";
+    questionSuggestion2 = "What use cases are good fits for zero knowledge tech?";
+    questionSuggestion3 = "How do you run a Linea node?";
+    feedbackLink = 'https://t.me/+QyptfCagmwRjMmEx'
+    welcomePopupTitle = "LineaGPT"
+    welcomePopupText = "This is a basic demo of an AI assistant with knowledge of all things Linea. This was created by the team at Mosaic, and does not have any official affiliation with Linea. The purpose of this demo is to learn what the world of crypto is interested in learning, so we may save the questions you ask. DO NOT SHARE ANY PERSONAL INFORMATION. We will take your feedback to make this GPT more useful.";
   }
 
   // Set logos
