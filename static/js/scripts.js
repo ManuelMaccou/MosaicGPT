@@ -1,14 +1,16 @@
 function getCurrentPath() {
   const pathName = window.location.pathname.toLowerCase();
-  if (pathName.includes('bankless')) {
-      return 'Bankless';
+  if (pathName.includes('pymnts')) {
+        return 'PYMNTS';
+    } else if (pathName.includes('bankless')) {
+        return 'Bankless';
     } else if (pathName.includes('polkadot')) {
       return 'Polkadot';
     } else if (pathName.includes('linea')) {
       return 'Linea';
     } else {
-      console.error('Invalid path');
-      return null;
+        console.error('Invalid path');
+        return null;
     }
 }
 
@@ -18,14 +20,30 @@ function setBranding() {
 
   const recentArticlesButtons = document.querySelectorAll('.recent-articles-button');
   recentArticlesButtons.forEach(button => {
-    if (currentPath === 'Bankless') {
+    if (currentPath === 'PYMNTS' || currentPath === 'Bankless') {
       button.style.display = 'block';
     } else {
       button.style.display = 'none';
     }
   });
 
-  if (currentPath === 'Bankless') {
+  if (currentPath === 'PYMNTS') {
+    logoHeader = 'Logos/PYMNTS/PYMNTS_2023_logo_white.svg';
+    headerColor = '#000000';
+    logoLanding = 'Logos/PYMNTS/PYMNTS_2022_logo_medium_green.svg';
+    primaryColor = '#FFFFFF';
+    secondaryColor = '#00A469';
+    primaryTextColor = '#000000';
+    secondaryTextColor = '#FFFFFF';
+    landingHeader = 'Explore the world of Payments';
+    recentArticlesQuery = "What is the latest news from PYMNTS?";
+    questionSuggestion1 = "How can we improve our risk management for digital currencies?";
+    questionSuggestion2 = "Which international markets are ideal for financial expansion now?";
+    questionSuggestion3 = "How do we add ESG criteria into our investment decisions?";
+    feedbackLink = 'https://forms.gle/RaY8EfdZtBMPv3fZ7'
+    welcomePopupTitle = "PYMNTS GPT Demo";
+    welcomePopupText = "This is a simple demo to provide an early idea of what an AI assistant could provide the PYMNTS community. We invite you to try it out and let us know what you think. This demo was made by the Mosaic team for demo purposes only and is not affiliated with PYMNTS in any way. We may retain questions asked in this demo to better understand what the community is interested in learning. Do not share any personal information.";
+  } else if (currentPath === 'Bankless') {
     logoHeader = 'Logos/Bankless/bankless_icon.png';
     headerColor = '#000000';
     logoLanding = 'Logos/Bankless/bankless_icon.png';
@@ -263,7 +281,7 @@ recentArticlesButtons.forEach(button => {
     }
 
     if (recentArticlesClicked) {
-      var numRecentArticles = currentPath === 'Bankless' ? 10 : null;
+      var numRecentArticles = currentPath === 'PYMNTS' ? 20 : currentPath === 'Bankless' ? 10 : null;
       if (!numRecentArticles) {
           console.error('Recent articles button not supported for this path');
           return;

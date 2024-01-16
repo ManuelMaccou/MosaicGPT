@@ -21,7 +21,7 @@ csv.field_size_limit(sys.maxsize)
 
 ES_PASSWORD = os.getenv('ES_PASSWORD')
 ES_CLOUD_ID = os.getenv('ES_CLOUD_ID')
-CSV_FILE_PATH = 'csv-files/PYMNTS/PYMTS_sitemap2_nov15.csv'
+CSV_FILE_PATH = 'csv-files/PYMNTS/PYMTS_sitemap3_oct18.csv'
 INDEX = "search-pymnts"
 
 max_word_count = 400
