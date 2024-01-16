@@ -20,9 +20,6 @@ es_username = os.getenv("ES_USERNAME")
 es_password = os.getenv("ES_PASSWORD")
 es_basic_auth_header = 'Basic ' + base64.b64encode(f'{es_username}:{es_password}'.encode()).decode()
 
-es_pymnts_endpoint = os.getenv("ES_PYMNTS_SEACH_APP_ENDPOINT")
-es_pymnts_search_app_api = os.getenv("ES_PYMNTS_SEARCH_APP_API")
-
 es_bankless_endpoint = os.getenv("ES_BANKLESS_SEARCH_APP_ENDPOINT")
 es_bankless_search_app_api = os.getenv("ES_BANKLESS_SEARCH_APP_API")
 
@@ -45,12 +42,8 @@ def index():
 
 @app.route('/<lowercase:path>')
 def catch_all(path):
-    if path == 'pymnts':
-        return render_template('index.html', path='PYMNTS')
-    elif path == 'bankless':
+    if path == 'bankless':
         return render_template('index.html', path='Bankless')
-    elif path == 'paymentsjournal':
-        return render_template('index.html', path='PaymentsJournal')
     elif path == 'polkadot':
         return render_template('index.html', path='Polkadot')
     elif path == 'linea':
@@ -121,14 +114,9 @@ def search(path):
         print(f"Received query: {query}")
 
     # Define Elasticsearch index and search template based on path
-    if path == 'pymnts':
-        es_index = 'search-pymnts'
-        search_template_id = 'standard_blog_search_template'
-    elif path == 'bankless':
+
+    if path == 'bankless':
         es_index = 'search-bankless'
-        search_template_id = 'standard_blog_search_template'
-    elif path == 'paymentsjournal':
-        es_index = 'search-payments-journal'
         search_template_id = 'standard_blog_search_template'
     elif path == 'polkadot':
         es_index = 'search-polkadot'
@@ -238,12 +226,8 @@ def recent_articles_search(path):
     num_recent_articles = request.args.get('num_recent_articles', type=int)
 
     # Define Elasticsearch index based on path
-    if path == 'pymnts':
-        es_index = 'search-pymnts'
-    elif path == 'bankless':
+    if path == 'bankless':
         es_index = 'search-bankless'
-    elif path == 'paymentsjournal':
-        es_index = 'search-payments-journal'
     else:
         return jsonify({"error": "Invalid path"}), 400
     

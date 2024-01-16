@@ -1,18 +1,14 @@
 function getCurrentPath() {
   const pathName = window.location.pathname.toLowerCase();
-  if (pathName.includes('pymnts')) {
-        return 'PYMNTS';
-    } else if (pathName.includes('bankless')) {
-        return 'Bankless';
-    } else if (pathName.includes('paymentsjournal')) {
-      return 'PaymentsJournal';
+  if (pathName.includes('bankless')) {
+      return 'Bankless';
     } else if (pathName.includes('polkadot')) {
       return 'Polkadot';
     } else if (pathName.includes('linea')) {
       return 'Linea';
     } else {
-        console.error('Invalid path');
-        return null;
+      console.error('Invalid path');
+      return null;
     }
 }
 
@@ -22,30 +18,14 @@ function setBranding() {
 
   const recentArticlesButtons = document.querySelectorAll('.recent-articles-button');
   recentArticlesButtons.forEach(button => {
-    if (currentPath === 'PYMNTS' || currentPath === 'Bankless' || currentPath === 'PaymentsJournal') {
+    if (currentPath === 'Bankless') {
       button.style.display = 'block';
     } else {
       button.style.display = 'none';
     }
   });
 
-  if (currentPath === 'PYMNTS') {
-    logoHeader = 'Logos/PYMNTS/PYMNTS_2023_logo_white.svg';
-    headerColor = '#000000';
-    logoLanding = 'Logos/PYMNTS/PYMNTS_2022_logo_medium_green.svg';
-    primaryColor = '#FFFFFF';
-    secondaryColor = '#00A469';
-    primaryTextColor = '#000000';
-    secondaryTextColor = '#FFFFFF';
-    landingHeader = 'Explore the world of Payments';
-    recentArticlesQuery = "What is the latest news from PYMNTS?";
-    questionSuggestion1 = "How can we improve our risk management for digital currencies?";
-    questionSuggestion2 = "Which international markets are ideal for financial expansion now?";
-    questionSuggestion3 = "How do we add ESG criteria into our investment decisions?";
-    feedbackLink = 'https://forms.gle/RaY8EfdZtBMPv3fZ7'
-    welcomePopupTitle = "PYMNTS GPT Demo";
-    welcomePopupText = "This is a simple demo to provide an early idea of what an AI assistant could provide the PYMNTS community. We invite you to try it out and let us know what you think. This demo was made by the Mosaic team for demo purposes only and is not affiliated with PYMNTS in any way. We may retain questions asked in this demo to better understand what the community is interested in learning. Do not share any personal information.";
-  } else if (currentPath === 'Bankless') {
+  if (currentPath === 'Bankless') {
     logoHeader = 'Logos/Bankless/bankless_icon.png';
     headerColor = '#000000';
     logoLanding = 'Logos/Bankless/bankless_icon.png';
@@ -61,22 +41,6 @@ function setBranding() {
     feedbackLink = 'https://t.me/+QyptfCagmwRjMmEx'
     welcomePopupTitle = "BanklessGPT Demo"
     welcomePopupText = "This is a basic demo of an AI assistant with knowledge of all things Bankless. This was created by the team at Mosaic, and does not have any official affiliation with Bankless. The purpose of this demo is to learn what the world of crypto is interested in learning, so we may save the questions you ask. DO NOT SHARE ANY PERSONAL INFORMATION. We will take your feedback to make this GPT more useful.";
-  } else if (currentPath === 'PaymentsJournal') {
-    logoHeader = 'Logos/PaymentsJournal/logo.jpeg';
-    headerColor = '#30789B';
-    logoLanding = 'Logos/PaymentsJournal/logo.jpeg';
-    primaryColor = '#FFFFFF';
-    secondaryColor = '#30789B';
-    primaryTextColor = '#000000';
-    secondaryTextColor = '#FFFFFF';
-    landingHeader = 'Explore the world of finance';
-    recentArticlesQuery = "What is the latest news from PaymentsJournal?";
-    questionSuggestion1 = "How has AI technology impacted the payments industry?";
-    questionSuggestion2 = "What impact does consumer sentiment have on their financial decisions and behaviors?";
-    questionSuggestion3 = "What are the key trends and statistics observed in the buy now, pay later market?";
-    feedbackLink = 'https://forms.gle/RaY8EfdZtBMPv3fZ7'
-    welcomePopupTitle = "PaymentsJournal GPT"
-    welcomePopupText = "This is a simple demo to provide an early idea of what an AI assistant could provide the PaymentsJournal community. We invite you to try it out and let us know what you think. This demo was made by the Mosaic team for demo purposes only and is not affiliated with PaymentsJournal in any way. We may retain questions asked in this demo to better understand what the community is interested in learning. Do not share any personal information.";
   } else if (currentPath === 'Polkadot') {
     logoHeader = 'Logos/Polkadot/Polkadot_Logo_Horizontal_Pink_White.png';
     headerColor = '#140523';
@@ -246,36 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
-  // Start code for recent news button
-/*
-  function handleRecentArticlesClick() {
-    var currentPath = getCurrentPath();
-    var numRecentArticles;
-
-    if (currentPath === 'PYMNTS') {
-        numRecentArticles = 20;
-    } else if (currentPath === 'Bankless') {
-        numRecentArticles = 10;
-    } else {
-        console.error('Recent articles button not supported for this path');
-        return;
-    }
-
-    // Send the GET request to the new Flask route
-    fetch(`/${currentPath.toLowerCase()}/recent-articles-search?num_recent_articles=${numRecentArticles}`)
-    .then(response => response.json())
-    .then(data => {
-        console.log('Response for recent articles:', data);
-        // Process and display the data
-        // This could involve updating the DOM with the received articles
-    })
-    .catch(error => {
-        console.error('Error fetching recent articles:', error);
-    });
-}
-*/
-// End code for recent news button
-
   menuButton.addEventListener('click', function() {
       mobileMenu.classList.toggle('visible');
   });
@@ -329,7 +263,7 @@ recentArticlesButtons.forEach(button => {
     }
 
     if (recentArticlesClicked) {
-      var numRecentArticles = currentPath === 'PYMNTS' ? 20 : currentPath === 'Bankless' ? 10 : currentPath === 'PaymentsJournal' ? 20 : null;
+      var numRecentArticles = currentPath === 'Bankless' ? 10 : null;
       if (!numRecentArticles) {
           console.error('Recent articles button not supported for this path');
           return;

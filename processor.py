@@ -21,8 +21,8 @@ csv.field_size_limit(sys.maxsize)
 
 ES_PASSWORD = os.getenv('ES_PASSWORD')
 ES_CLOUD_ID = os.getenv('ES_CLOUD_ID')
-CSV_FILE_PATH = 'csv-files/Linea/Linea docs.csv'
-INDEX = "search-linea"
+CSV_FILE_PATH = 'csv-files/PYMNTS/PYMTS_sitemap2_nov15.csv'
+INDEX = "search-pymnts"
 
 max_word_count = 400
 
@@ -287,7 +287,7 @@ async def process_csv_and_index_to_elasticsearch(csv_file_path, index):
                         "title": title,
                         "description": row['description'],
                         "image": row['image'],
-                        "articleURL": row['article_url'],
+                        "articleUrl": row['article_url'],
                         "client": row['client'],
                         "contentType": row['content_type']
                     }
