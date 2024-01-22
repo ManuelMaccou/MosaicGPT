@@ -21,8 +21,8 @@ csv.field_size_limit(sys.maxsize)
 
 ES_PASSWORD = os.getenv('ES_PASSWORD')
 ES_CLOUD_ID = os.getenv('ES_CLOUD_ID')
-CSV_FILE_PATH = 'csv-files/PYMNTS/PYMTS_sitemap3_oct18.csv'
-INDEX = "search-pymnts"
+CSV_FILE_PATH = 'csv-files/All apps/apps_4.csv'
+INDEX = "search-web3-apps"
 
 max_word_count = 400
 
@@ -35,7 +35,7 @@ def write_errors_to_csv(failed_docs, file_name='failed_indexing.csv'):
         writer.writerows(failed_docs)
     logging.info(f"Failed documents written to {file_name}")
 
-async def bulk_index_to_elasticsearch(documents, index):
+async def bulk_index_to_elasticsearch(documents, original_docs, index):
     try:
         async with await get_elasticsearch_client() as es:
             RETRY_ON_TIMEOUT = 3
@@ -43,8 +43,8 @@ async def bulk_index_to_elasticsearch(documents, index):
             errors = []
             failed_docs = []
 
-            for doc in documents:
-                current_doc = doc
+            for doc_index, doc in enumerate(documents):
+                current_doc = original_docs[doc_index]
                 action = {
                     "_op_type": "create",
                     "_index": index,
@@ -254,6 +254,7 @@ def create_hashed_id(*args):
 
 async def process_csv_and_index_to_elasticsearch(csv_file_path, index):
     structured_documents = []
+    original_docs = []
 
     required_fields = ['title', 'description', 'image', 'content', 'html_content', 'article_url', 'client', 'content_type']
 
@@ -299,7 +300,7 @@ async def process_csv_and_index_to_elasticsearch(csv_file_path, index):
                         'tags': 'tags'
                     }
 
-                    optional_fields = ['author', 'publication_date', 'breadcrumbs', 'tags']
+                    optional_fields = ['author', 'publication_date', 'breadcrumbs', 'tags', 'ecosystem']
 
                     for field in optional_fields:
                         field_value = row.get(field)
@@ -309,7 +310,7 @@ async def process_csv_and_index_to_elasticsearch(csv_file_path, index):
                             es_field_name = field_name_mapping.get(field, field)
                             structured_doc[es_field_name] = field_value
 
-
+                    original_docs.append(row)
                     structured_documents.append(structured_doc)
                     
             logging.info(f"Total structured documents to index: {len(structured_documents)}")
@@ -319,7 +320,7 @@ async def process_csv_and_index_to_elasticsearch(csv_file_path, index):
         print(f"CSV error for article URL {current_article_url}: {e}")
 
     # Bulk index the documents to Elasticsearch
-    total_successes, errors = await bulk_index_to_elasticsearch(structured_documents, index)
+    total_successes, errors = await bulk_index_to_elasticsearch(structured_documents, original_docs, index)
     logging.info(f"Total documents indexed successfully: {total_successes}")
     if errors:
         logging.error(f"Errors encountered: {errors}")
