@@ -342,7 +342,9 @@ def extract_context(es_data):
         client = hit['_source'].get('client', '')
         chunked_content = hit['_source'].get('fullContent', '')
         # Adding a separator between hits
-        context += f"Here is an excerpt from '{client}' titled '{title}'  Excerpt: {chunked_content}\n\n---\n\n"
+        article = f"Here is an excerpt from '{client}' titled '{title}'  Excerpt: {chunked_content}\n\n---\n\n"
+        if article not in context:
+            context += article
     return context
 
 if __name__ == '__main__':
