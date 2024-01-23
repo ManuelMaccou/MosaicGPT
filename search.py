@@ -316,8 +316,6 @@ def recent_articles_search(path):
                 ],
                 stream=True
             )
-            with open("new", "w") as f:
-                f.write(context)
             for chunk in stream:
                 content = chunk.choices[0].delta.content
                 if content:
