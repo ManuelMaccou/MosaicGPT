@@ -117,7 +117,7 @@ html, body {
   text-align: center;
 }
 .landing-logo {
-  max-height: 50px;
+  max-height: 70px;
   margin-bottom: 20px;
 }
 .landing h1 {
@@ -183,6 +183,7 @@ html, body {
   font-size: 16px;
 }
 .ch-update {
+  font-size: 14px;
   margin-right: auto;
   margin-left: auto;
   margin-bottom: 20px;
@@ -207,7 +208,7 @@ html, body {
   background-color: transparent;
   color: var(--secondary-text-color);
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   border-radius: 5px;
   border-style: solid;
   border-color: #2d2d2d1a;
@@ -222,7 +223,7 @@ html, body {
   background-color: transparent;
   color: var(--secondary-text-color);
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   border-radius: 5px;
   border-style: solid;
   border-color: #2d2d2d1a;
@@ -236,7 +237,7 @@ html, body {
   background-color: transparent;
   color: var(--secondary-text-color);
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   border-radius: 5px;
   border-style: solid;
   border-color: #2d2d2d1a;
@@ -337,7 +338,7 @@ html, body {
     justify-content: space-between;
   }
   .header .header-logo {
-    max-height: 40px;
+    max-height: 35px;
   }
   .welcome-popup {
     display: none;
