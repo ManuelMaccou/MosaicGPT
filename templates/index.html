@@ -19,6 +19,7 @@
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <link href="{{ url_for('static', filename='Icons/fontawesome-free-6.5.1-web/css/all.css') }}" rel="stylesheet">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
 </head>
 <body>
   <div id="overlay"></div>
@@ -38,6 +39,7 @@
     <button id="suggestion1m" class="suggestion-button"></button>
     <button id="suggestion2m" class="suggestion-button"></button>
     <button id="suggestion3m" class="suggestion-button"></button>
+    <button id="suggestion4m" class="suggestion-button-4"></button>
     <a href="mailto:manuel@mosaicgpts.com" class="contact-button-mobile">Contact us</a>
   </div>
   <div id="welcome-popup" class="welcome-popup">
@@ -73,12 +75,18 @@
       <button id="suggestion1" class="suggestion-button"></button>
       <button id="suggestion2" class="suggestion-button"></button>
       <button id="suggestion3" class="suggestion-button"></button>
+      <button id="suggestion4" class="suggestion-button-4"></button>
     </div>
     <div class="search-container">
       <input type="text" class="search-input" placeholder="What would you like to know?" id="searchQuery">
       <button class="search-button">
         <i class="fa-solid fa-paper-plane"></i>
       </button>
+    </div>
+    <div class="ch-update">
+      <span>
+        Chat history is not currently available, but coming soon.
+      </span>
     </div>
   </div>
 

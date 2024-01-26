@@ -91,7 +91,7 @@ html, body {
   display: block;
 }
 .main-container {
-  width: 70%;
+  width: 80%;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -100,10 +100,11 @@ html, body {
 }
 .content-wrapper {
   height: 100%;
-  width: 100%;
+  width: 80%;
   display: flex;
   justify-content: flex-start;
   align-items: stretch;
+  align-self: end;
   overflow: auto;
   gap: 50px;
 }
@@ -144,29 +145,36 @@ html, body {
   display: none; /* For Chrome, Safari, and Opera */
 }
 .search-container {
-  width: 70%;
+  width: 50%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #ffffff33;
   display: flex;
   flex-direction: row;
   align-items: center;
   margin: 20px;
   align-self: center;
+  border: 1px solid #ddd;
+  border-radius: 10px;
 }
 .search-input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 10px 0 0 10px;
+  padding: 20px;
+  background-color: transparent ;
+  border-style: none;
   font-size: 16px;
-  margin-right: -1px;
+  color: #2d2d2d;
+}
+.search-input::placeholder {
+  color: #696969;
 }
 .search-input:focus-visible {
   outline: none;
 }
 .search-button {
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  background-color: #FFFFFF;
-  border-radius: 0 10px 10px 0;
+  padding: 20px 15px;
+  background-color: transparent;
+  border-style: none;
   cursor: pointer;
   font-size: 16px;
 }
@@ -174,49 +182,75 @@ html, body {
   color: var(--secondary-color);
   font-size: 16px;
 }
+.ch-update {
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: 20px;
+  color: #696969;
+}
 .suggestions {
   width: 70%;
   align-self: center;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: center;
   gap: 10px;
   margin-top: 20px;
 }
 .suggestion-button {
-  width: calc(50% - 120px);
+  display: block;
+  width: 50%;
+  max-width: 370px;
+  height: 65px;
   padding: 10px;
   margin-bottom: 10px;
-  background-color: var(--secondary-color);
+  background-color: transparent;
   color: var(--secondary-text-color);
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
-  border-style: none;
+  border-style: solid;
+  border-color: #2d2d2d1a;
+}
+.suggestion-button-4 {
+  display: none;
+  width: 50%;
+  max-width: 370px;
+  height: 65px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: transparent;
+  color: var(--secondary-text-color);
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  border-style: solid;
+  border-color: #2d2d2d1a;
 }
 .recent-articles-button {
-  display: none;
-  width: calc(50% - 120px);
+  width: 50%;
+  max-width: 370px;
+  height: 65px;
   padding: 10px;
   margin-bottom: 10px;
-  background-color: var(--secondary-color);
+  background-color: transparent;
   color: var(--secondary-text-color);
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
-  border-style: none;
+  border-style: solid;
+  border-color: #2d2d2d1a;
 }
 .source-column {
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 300px;
+  width: 400px;
   overflow-y: auto;
   scrollbar-width: none;
 }
 .source-card {
   background-color: var(--primary-color);
-  box-shadow: 3px 3px 7px 2px rgb(142 142 142 / 30%);
   margin-bottom: 20px;
   border-radius: 5px;
   border: 1px solid #a5a5a561;
@@ -237,15 +271,18 @@ html, body {
 }
 .source-card img {
   width: 100%;
-  height: 100px;
+  height: auto;
   object-fit: cover;
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
 }
 .source-text{
   padding: 10px;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--primary-text-color);;
+}
+.card-link {
+  text-decoration: none;
 }
 .source-mobile-container {
   display: none;
@@ -320,6 +357,7 @@ html, body {
     width: 90%;
   }
   .content-wrapper {
+    width: 100%;
     flex-direction: column;
     overflow-y: auto;
   }
@@ -327,6 +365,8 @@ html, body {
     display: none;
   }
   .answer-container {
+    font-size: 18px;
+    line-height: 1.4;
     padding: 0;
     margin-top: 20px;
     font-size: 13px;
@@ -345,7 +385,6 @@ html, body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    text-decoration: none;
   }
   .source-card {
     display: flex;
@@ -389,6 +428,22 @@ html, body {
     width: 100%;
     margin-bottom: 10px;
     font-size: 12px;
+    height: 65px;
+  }
+  .suggestion-button-4 {
+    display: none;
+    width: calc(50% - 120px);
+    max-width: 370px;
+    height: 65px;
+    padding: 10px;
+    margin-bottom: 10px;
+    /*background-color: var(--secondary-color);*/
+    color: var(--secondary-text-color);
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.3);
   }
   .recent-articles-button{
     width: 100%;

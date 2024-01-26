@@ -2,6 +2,8 @@ function getCurrentPath() {
   const pathName = window.location.pathname.toLowerCase();
   if (pathName.includes('pymnts')) {
         return 'PYMNTS';
+    } else if (pathName.includes('finance')) {
+        return 'Finance';
     } else if (pathName.includes('bankless')) {
         return 'Bankless';
     } else if (pathName.includes('polkadot')) {
@@ -27,6 +29,15 @@ function setBranding() {
     }
   });
 
+  const suggestion4Button = document.querySelectorAll('.suggestion-button-4');
+  suggestion4Button.forEach(button => {
+    if (currentPath != 'PYMNTS' || currentPath != 'Bankless') {
+      button.style.display = 'block';
+    } else {
+      button.style.display = 'none';
+    }
+  });
+
   if (currentPath === 'PYMNTS') {
     logoHeader = 'Logos/PYMNTS/PYMNTS_2023_logo_white.svg';
     headerColor = '#000000';
@@ -43,6 +54,22 @@ function setBranding() {
     feedbackLink = 'https://forms.gle/RaY8EfdZtBMPv3fZ7'
     welcomePopupTitle = "PYMNTS GPT Demo";
     welcomePopupText = "This is a simple demo to provide an early idea of what an AI assistant could provide the PYMNTS community. We invite you to try it out and let us know what you think. This demo was made by the Mosaic team for demo purposes only and is not affiliated with PYMNTS in any way. We may retain questions asked in this demo to better understand what the community is interested in learning. Do not share any personal information.";
+  } else if (currentPath === 'Finance') {
+    logoHeader = 'Logos/mosiac_logo_horizontal.png';
+    headerColor = '#FFFFFF';
+    logoLanding = 'Logos/mosiac_logo_.png';
+    primaryColor = '#FFFFFF';
+    secondaryColor = '#0d0e24';
+    primaryTextColor = '#2d2d2d';
+    secondaryTextColor = '#2d2d2d';
+    landingHeader = 'Explore the world of finance';
+    questionSuggestion1 = "What are some investment opportunities in the current market?";
+    questionSuggestion2 = "How do emerging market dynamics affect global financial stability?";
+    questionSuggestion3 = "How are financial institutions using blockchain technology?";
+    questionSuggestion4 = "How are financial institutions using AI?";
+    feedbackLink = 'https://forms.gle/33bv5dPpQ4hQGS4U9'
+    welcomePopupTitle = "A custom GPT for finance"
+    welcomePopupText = "Thank you for checking out this early version of a custom GPT built specifically for the finance industry. If you haven't joined out LinkedIn group, you can do so below. If you're a writer or journalist, you can contribute your content to be included in the GPT. In order to learn what the finance community is interested in learning, so we may save the questions you ask. DO NOT SHARE ANY PERSONAL INFORMATION. We will take your feedback to make this GPT more useful.";
   } else if (currentPath === 'Bankless') {
     logoHeader = 'Logos/Bankless/bankless_icon.png';
     headerColor = '#000000';
@@ -111,9 +138,11 @@ function setBranding() {
   document.getElementById('suggestion1m').textContent = questionSuggestion1;
   document.getElementById('suggestion2m').textContent = questionSuggestion2;
   document.getElementById('suggestion3m').textContent = questionSuggestion3;
+  document.getElementById('suggestion4m').textContent = questionSuggestion4;
   document.getElementById('suggestion1').textContent = questionSuggestion1;
   document.getElementById('suggestion2').textContent = questionSuggestion2;
   document.getElementById('suggestion3').textContent = questionSuggestion3;
+  document.getElementById('suggestion4').textContent = questionSuggestion4;
 
 
   // Set feedback link
@@ -134,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var searchInput = document.getElementById('searchQuery');
   var searchButton = document.querySelector('.search-button');
   var suggestionButtons = document.querySelectorAll('.suggestion-button');
+  var suggestionButton4 = document.querySelectorAll('.suggestion-button-4');
   var sourceColumn = document.getElementById('sourceColumn');
   var sourceMobileContainer = document.getElementById('sourceMobileContainer');
   var tempLanding = document.getElementById('tempLanding');
@@ -244,6 +274,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+suggestionButton4.forEach(button => {
+  button.addEventListener('click', function() {
+      searchInput.value = this.textContent; // Set the search input value to the button's text
+      searchButton.click(); // Programmatically click the search button
+
+      mobileMenu.classList.remove('visible');
+  });
+});
+
 recentArticlesButtons.forEach(button => {
   button.addEventListener('click', function() {
       // searchInput.value = this.textContent; // Set the search input value to the button's text
@@ -310,6 +349,18 @@ recentArticlesButtons.forEach(button => {
         if (sourceCards.length > 0) {
           sendDataToGptStats(query, elasticSearchSources);
           tempLanding.style.display = 'none';
+
+          suggestionButtons.forEach(function(button) {
+            button.style.display = 'none';
+          });
+
+          suggestionButton4.forEach(function(button) {
+            button.style.display = 'none';
+          });
+
+          recentArticlesButtons.forEach(function(button) {
+            button.style.display = 'none';
+          });
     
           sourceCards.forEach(function(card) {
             var cardElement = document.createElement('div');

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, redirect
 from werkzeug.routing import BaseConverter, ValidationError
 import requests
 from openai import OpenAI
@@ -41,12 +41,14 @@ app.url_map.converters['lowercase'] = LowerCaseConverter
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect("http://mosaicnetwork.co", code=302)
 
 @app.route('/<lowercase:path>')
 def catch_all(path):
     if path == 'pymnts':
         return render_template('index.html', path='PYMNTS')
+    elif path == 'finance':
+        return render_template('index.html', path='Finance')
     elif path == 'bankless':
         return render_template('index.html', path='Bankless')
     elif path == 'polkadot':
@@ -122,6 +124,9 @@ def search(path):
     if path == 'pymnts':
         es_index = 'search-pymnts'
         search_template_id = 'standard_blog_search_template'
+    elif path == 'finance':
+        es_index = 'search-finance'
+        search_template_id = 'standard_blog_search_template'
     elif path == 'bankless':
         es_index = 'search-bankless'
         search_template_id = 'standard_blog_search_template'
@@ -156,11 +161,13 @@ def search(path):
     es_data = es_response.json()
 
     unique_source_cards = {}
+    DEFAULT_IMG = "https://aef8cbb778975f3e4df2041ad0bae1ca.cdn.bubble.io/f1706204093859x790451107332714700/article_img_placeholder.jpg"
+
     if 'hits' in es_data and 'hits' in es_data['hits']:
         for hit in es_data['hits']['hits']:
             source_data = hit['_source']
             title = source_data.get('title')
-            image = source_data.get('image')
+            image = source_data.get('image', DEFAULT_IMG)
             articleUrl = source_data.get('articleUrl')
 
             app.logger.info(f"Title: {title}")
@@ -168,7 +175,7 @@ def search(path):
             unique_key = title
             if unique_key not in unique_source_cards:
                 source_card = {
-                    "image": image,
+                    "image": image if image else DEFAULT_IMG,
                     "articleUrl": articleUrl,
                     "title": title
                 }
@@ -263,11 +270,13 @@ def recent_articles_search(path):
     # logging.info(f"Elasticsearch Response: {es_data}")
 
     unique_source_cards = {}
+    DEFAULT_IMG = "https://aef8cbb778975f3e4df2041ad0bae1ca.cdn.bubble.io/f1706204093859x790451107332714700/article_img_placeholder.jpg"
+
     if 'hits' in es_data and 'hits' in es_data['hits']:
         for hit in es_data['hits']['hits']:
             source_data = hit['_source']
             title = source_data.get('title')
-            image = source_data.get('image')
+            image = source_data.get('image', DEFAULT_IMG)
             articleUrl = source_data.get('articleUrl')
 
             app.logger.info(f"Title: {title}")
@@ -275,7 +284,7 @@ def recent_articles_search(path):
             unique_key = title
             if unique_key not in unique_source_cards:
                 source_card = {
-                    "image": image,
+                    "image": image if image else DEFAULT_IMG,
                     "articleUrl": articleUrl,
                     "title": title
                 }
@@ -340,7 +349,7 @@ def extract_context(es_data):
     for hit in es_data['hits']['hits']:
         title = hit['_source'].get('title', '')
         client = hit['_source'].get('client', '')
-        chunked_content = hit['_source'].get('fullContent', '')
+        chunked_content = hit['_source'].get('chunkedContent', '')
         # Adding a separator between hits
         context += f"Here is an excerpt from '{client}' titled '{title}'  Excerpt: {chunked_content}\n\n---\n\n"
     return context

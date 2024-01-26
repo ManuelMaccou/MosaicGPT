@@ -21,8 +21,8 @@ csv.field_size_limit(sys.maxsize)
 
 ES_PASSWORD = os.getenv('ES_PASSWORD')
 ES_CLOUD_ID = os.getenv('ES_CLOUD_ID')
-CSV_FILE_PATH = 'csv-files/All apps/apps_4.csv'
-INDEX = "search-web3-apps"
+CSV_FILE_PATH = 'csv-files/Bankless/Bankless Update Jan 23.csv'
+INDEX = "search-bankless"
 
 max_word_count = 400
 
@@ -48,9 +48,9 @@ async def bulk_index_to_elasticsearch(documents, original_docs, index):
                 action = {
                     "_op_type": "create",
                     "_index": index,
-                    "_id": doc["_id"],  # Using "_id" for Elasticsearch document ID
-                    "_source": {key: value for key, value in doc.items() if key != "_id"},  # Include "id" in the source
-                    "pipeline": "ml-inference-master"  # Update if you have a different pipeline
+                    "_id": doc["_id"],
+                    "_source": {key: value for key, value in doc.items() if key != "_id"},
+                    "pipeline": "ml-inference-master"
                 }
 
                 for attempt in range(RETRY_ON_TIMEOUT):
