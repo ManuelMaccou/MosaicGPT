@@ -62,7 +62,7 @@ html, body {
   align-items: center;
 }
 .header .header-logo {
-  max-height: 50px;
+  max-height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -290,8 +290,8 @@ html, body {
 }
 .mobile-menu {
   padding-top: 20px;
-  padding-left: 100px;
-  padding-right: 100px;
+  padding-left: 50px;
+  padding-right: 50px;
   display: none;
   position: fixed;
   top: 0;
@@ -338,7 +338,7 @@ html, body {
     justify-content: space-between;
   }
   .header .header-logo {
-    max-height: 35px;
+    max-height: 40px;
   }
   .welcome-popup {
     display: none;
@@ -428,28 +428,26 @@ html, body {
   .suggestion-button {
     width: 100%;
     margin-bottom: 10px;
-    font-size: 12px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 14px;
     height: 65px;
   }
   .suggestion-button-4 {
-    display: none;
-    width: calc(50% - 120px);
-    max-width: 370px;
-    height: 65px;
-    padding: 10px;
+    width: 100%;
     margin-bottom: 10px;
-    /*background-color: var(--secondary-color);*/
-    color: var(--secondary-text-color);
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-    border-style: solid;
-    border-color: rgba(0, 0, 0, 0.3);
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 14px;
+    height: 65px;
   }
   .recent-articles-button{
     width: 100%;
     margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
     font-size: 12px;
+    height: 65px;
   }
   .search-container {
     width: 90%;
