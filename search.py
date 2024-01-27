@@ -55,6 +55,12 @@ def catch_all(path):
         return render_template('index.html', path='Polkadot')
     elif path == 'linea':
         return render_template('index.html', path='Linea')
+    elif path == 'celo':
+        return render_template('index.html', path='Celo')
+    elif path == 'stacks':
+        return render_template('index.html', path='Stacks')
+    elif path == 'rootstock':
+        return render_template('index.html', path='Rootstock')
     else:
         return 'Page not found', 404
 
@@ -135,6 +141,15 @@ def search(path):
         search_template_id = 'standard_docs_search_template'
     elif path == 'linea':
         es_index = 'search-linea'
+        search_template_id = 'standard_docs_search_template'
+    elif path == 'celo':
+        es_index = 'search-celo'
+        search_template_id = 'standard_docs_search_template'
+    elif path == 'stacks':
+        es_index = 'search-stacks'
+        search_template_id = 'standard_docs_search_template'
+    elif path == 'rootstock':
+        es_index = 'search-rootstock'
         search_template_id = 'standard_docs_search_template'
     else:
         return jsonify({"error": "Invalid path"}), 400
