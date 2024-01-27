@@ -7,10 +7,18 @@ import traceback
 import json
 import logging
 import base64
+import redis
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+redis_host = os.getenv("REDIS_HOST")
+redis_port = os.getenv("REDIS_PORT")
+redis_password = os.getenv("REDIS_PASSWORD")
+
+# Connect to Redis
+r = redis.Redis(host=redis_host, port=redis_port, password=redis_password, db=0)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -38,6 +46,24 @@ class LowerCaseConverter(BaseConverter):
         return value.lower()
     
 app.url_map.converters['lowercase'] = LowerCaseConverter
+
+# Farcaster Frames
+image_list = [
+    "https://aef8cbb778975f3e4df2041ad0bae1ca.cdn.bubble.io/f1706204093859x790451107332714700/article_img_placeholder.jpg",
+    "Images/image2.jpg",
+    "Images/image3.jpg",
+]
+
+@app.route('/api/frames', methods=["POST"])
+def index():
+    # Get the current counter value from Redis and increment it
+    counter = r.incr("image_counter")
+
+    # Select the image based on the current value of the counter
+    selected_image = image_list[counter % len(image_list)]
+
+    # Render the template with the selected image
+    return render_template('index.html', selected_image=selected_image)
 
 @app.route('/')
 def index():
