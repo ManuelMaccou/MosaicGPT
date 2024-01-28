@@ -58,16 +58,15 @@ app.url_map.converters['lowercase'] = LowerCaseConverter
 
 # Farcaster Frames
 image_list = [
-    "Images/article_img_placeholder.jpg",
-    "Logos/Linea/Wordmark Black BG.png",
-    "Logos/Polkadot/Polkadot_Logo_Horizontal_Black.png",
+    "https://aef8cbb778975f3e4df2041ad0bae1ca.cdn.bubble.io/f1706204093859x790451107332714700/article_img_placeholder.jpg",
+    "https://ask.mosaicnetwork.co/static/Logos/Bankless/bankless_icon.png",
+    "https://ask.mosaicnetwork.co/static/Logos/Linea/Logomark%20Black%20BG.png",
 ]
 
 @app.route('/', methods=["GET", "POST"])
 def api_frames_index():
     counter = r.incr("image_counter")
     selected_image = image_list[counter % len(image_list)] if request.method == 'POST' else image_list[0]
-    image_url = url_for('static', filename=selected_image)
 
     # Build the HTML content with actual URLs for static resources
     css_url = url_for('static', filename='css/styles.css')
@@ -96,7 +95,7 @@ def api_frames_index():
         <meta property="twitter:image" content="none">
 
         <meta property="fc:frame" content="Browse our GPTs">
-        <meta property="fc:frame:image" content="{image_url}">
+        <meta property="fc:frame:image" content="{selected_image}">
         <meta property="fc:frame:button:1" content="prev">
         <meta property="fc:frame:button:2" content="next">
 
