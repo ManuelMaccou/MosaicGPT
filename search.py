@@ -66,38 +66,44 @@ image_list = [
 @app.route('/', methods=["GET", "POST"])
 def api_frames_index():
     counter = r.incr("image_counter")
-    selected_image = image_list [counter % len(image_list)] if request.method == 'POST' else image_list[0]
+    selected_image = image_list[counter % len(image_list)] if request.method == 'POST' else image_list[0]
     image_url = url_for('static', filename=selected_image)
+
+    # Build the HTML content with actual URLs for static resources
+    css_url = url_for('static', filename='css/styles.css')
+    icons_url = url_for('static', filename='Icons/fontawesome-free-6.5.1-web/css/all.css')
+    favicon_url = url_for('static', filename='favicon.png')
+
     # Build the HTML content
     html_content = f"""
     <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GPT Web App</title>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GPT Web App</title>
 
-  <meta property="og:type" content="">
-  <meta property="og:url" content="">
-  <meta property="og:title" content="Mosaic GPTs">
-  <meta property="og:description" content="Custom GPTs">
-  <meta property="og:image" content="none">
-  
-  <meta property="twitter:card" content="">
-  <meta property="twitter:url" content="">
-  <meta property="twitter:title" content="Mosaic GPTs">
-  <meta property="twitter:description" content="Custom GPTs">
-  <meta property="twitter:image" content="none">
+        <meta property="og:type" content="">
+        <meta property="og:url" content="">
+        <meta property="og:title" content="Mosaic GPTs">
+        <meta property="og:description" content="Custom GPTs">
+        <meta property="og:image" content="none">
 
-  <meta name="fc:frame" content="Browse our GPTs">
-  <meta name="fc:frame:image" content="{image_url}">
-  <meta name="fc:frame:button:1" content="prev">
-  <meta name="fc:frame:button:2" content="next">
+        <meta property="twitter:card" content="">
+        <meta property="twitter:url" content="">
+        <meta property="twitter:title" content="Mosaic GPTs">
+        <meta property="twitter:description" content="Custom GPTs">
+        <meta property="twitter:image" content="none">
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <link href="{{ url_for('static', filename='Icons/fontawesome-free-6.5.1-web/css/all.css') }}" rel="stylesheet">
-  <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
-</head>
+        <meta name="fc:frame" content="Browse our GPTs">
+        <meta name="fc:frame:image" content="{image_url}">
+        <meta name="fc:frame:button:1" content="prev">
+        <meta name="fc:frame:button:2" content="next">
+
+        <link rel="stylesheet" href="{css_url}">
+        <link href="{icons_url}" rel="stylesheet">
+        <link rel="icon" href="{favicon_url}">
+    </head>
     """
     return Response(html_content, mimetype='text/html')
 
