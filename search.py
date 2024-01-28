@@ -57,13 +57,13 @@ app.url_map.converters['lowercase'] = LowerCaseConverter
 
 # Farcaster Frames
 image_list = [
-    "https://aef8cbb778975f3e4df2041ad0bae1ca.cdn.bubble.io/f1706204093859x790451107332714700/article_img_placeholder.jpg",
+    "Images/article_img_placeholder.jpg",
     "Images/image2.jpg",
     "Images/image3.jpg",
 ]
 
 @app.route('/api/frames', methods=["POST"])
-def index():
+def api_frames_index():
     # Get the current counter value from Redis and increment it
     counter = r.incr("image_counter")
 
