@@ -8,17 +8,25 @@ import json
 import logging
 import base64
 import redis
+from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-redis_host = os.getenv("REDIS_HOST")
-redis_port = os.getenv("REDIS_PORT")
-redis_password = os.getenv("REDIS_PASSWORD")
+# Load environment variable for Redis URL
+redis_url = os.getenv("REDIS_URL")
 
-# Connect to Redis
-r = redis.Redis(host=redis_host, port=redis_port, password=redis_password, db=0)
+# Parse the Redis URL
+parsed_redis_url = urlparse(redis_url)
+
+# Connect to Redis using the URL
+r = redis.Redis(
+    host=parsed_redis_url.hostname,
+    port=parsed_redis_url.port,
+    password=parsed_redis_url.password,
+    db=0
+)
 
 logging.basicConfig(level=logging.INFO)
 
