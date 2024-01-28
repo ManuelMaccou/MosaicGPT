@@ -95,10 +95,10 @@ def api_frames_index():
         <meta property="twitter:description" content="Custom GPTs">
         <meta property="twitter:image" content="none">
 
-        <meta name="fc:frame" content="Browse our GPTs">
-        <meta name="fc:frame:image" content="{image_url}">
-        <meta name="fc:frame:button:1" content="prev">
-        <meta name="fc:frame:button:2" content="next">
+        <meta property="fc:frame" content="Browse our GPTs">
+        <meta property="fc:frame:image" content="{image_url}">
+        <meta property="fc:frame:button:1" content="prev">
+        <meta property="fc:frame:button:2" content="next">
 
         <link rel="stylesheet" href="{css_url}">
         <link href="{icons_url}" rel="stylesheet">
