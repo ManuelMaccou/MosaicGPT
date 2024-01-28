@@ -62,18 +62,20 @@ image_list = [
     "Images/image3.jpg",
 ]
 
-@app.route('/api/frames', methods=["GET", "POST"])
+@app.route('/', methods=["GET", "POST"])
 def api_frames_index():
     if request.method == "POST":
         counter = r.incr("image_counter")
         selected_image = image_list[counter % len(image_list)]
     else:
-        selected_image = image_list[0] 
+        selected_image = image_list[0]
     return render_template('index.html', selected_image=selected_image)
 
+"""
 @app.route('/')
 def index():
     return redirect("http://mosaicnetwork.co", code=302)
+"""
 
 @app.route('/<lowercase:path>')
 def catch_all(path):
