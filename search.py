@@ -62,15 +62,13 @@ image_list = [
     "Images/image3.jpg",
 ]
 
-@app.route('/api/frames', methods=["POST"])
+@app.route('/api/frames', methods=["GET", "POST"])
 def api_frames_index():
-    # Get the current counter value from Redis and increment it
-    counter = r.incr("image_counter")
-
-    # Select the image based on the current value of the counter
-    selected_image = image_list[counter % len(image_list)]
-
-    # Render the template with the selected image
+    if request.method == "POST":
+        counter = r.incr("image_counter")
+        selected_image = image_list[counter % len(image_list)]
+    else:
+        selected_image = image_list[0] 
     return render_template('index.html', selected_image=selected_image)
 
 @app.route('/')
