@@ -59,8 +59,8 @@ app.url_map.converters['lowercase'] = LowerCaseConverter
 # Farcaster Frames
 image_list = [
     "Images/article_img_placeholder.jpg",
-    "Images/image2.jpg",
-    "Images/image3.jpg",
+    "Logos/Linea/Wordmark Black BG.png",
+    "Logos/Polkadot/Polkadot_Logo_Horizontal_Black.png",
 ]
 
 @app.route('/', methods=["GET", "POST"])
