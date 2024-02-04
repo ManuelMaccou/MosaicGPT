@@ -9,18 +9,13 @@
   <meta property="og:url" content="">
   <meta property="og:title" content="Mosaic GPTs">
   <meta property="og:description" content="Custom GPTs">
-  <meta property="og:image" content="{{ url_for('static', filename='Images/article_img_placeholder.jpg') }}">
+  <meta property="og:image" content="{{ url_for('static', filename='Images/social_background.jpg') }}">
   
   <meta property="twitter:card" content="">
   <meta property="twitter:url" content="">
   <meta property="twitter:title" content="Mosaic GPTs">
   <meta property="twitter:description" content="Custom GPTs">
   <meta property="twitter:image" content="none">
-
-  <meta property="fc:frame" content="vNext" />
-  <meta property="fc:frame:image" content="https://aef8cbb778975f3e4df2041ad0bae1ca.cdn.bubble.io/f1706204093859x790451107332714700/article_img_placeholder.jpg" />
-  <meta property="fc:frame:button:1" content="prev" />
-  <meta property="fc:frame:button:2" content="next" />
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <link href="{{ url_for('static', filename='Icons/fontawesome-free-6.5.1-web/css/all.css') }}" rel="stylesheet">
@@ -31,6 +26,14 @@
   <div class="header">
     <img src="#" alt="Company logo" class="header-logo">
     <div class="contact-nav">
+      {% if current_path == '/finance' %}
+        {% if not session.user %}
+          <a href="/login" class="btn btn-primary" id="login-button">Log in</a>
+        {% else %}
+          <img src="{{session.userinfo.picture}}" alt="Profile Picture" class="profile-picture">
+          <a href="/logout" class="btn btn-primary" id="logout-button">Log out</a>
+        {% endif %}
+      {% endif %}
       <a href="https://forms.gle/RaY8EfdZtBMPv3fZ7" target="_blank" id="feedback" class="contact-button">Share feedback</a>
       <a href="mailto:manuel@mosaicgpts.com" class="contact-button">Contact us</a>
       <button class="menu-button">&#9776;</button>
@@ -38,6 +41,13 @@
   </div>
   <div class="mobile-menu">
     <button class="close-button">&times;</button>
+    {% if current_path == '/finance' %}
+      {% if not session.user %}
+        <a href="/login" class="btn btn-mobile" id="login-button-mobile">Log in</a>
+        {% else %}
+          <img src="{{session.userinfo.picture}}" alt="Profile Picture" class="profile-picture">
+      {% endif %}
+    {% endif %}
     <a href="https://forms.gle/RaY8EfdZtBMPv3fZ7" target="_blank" id="feedbackm" class="contact-button-mobile">Share feedback</a>
     <h3>Sample Questions</h3>
     <button id="recentArticlesm" class="recent-articles-button"></button>
@@ -46,6 +56,9 @@
     <button id="suggestion3m" class="suggestion-button"></button>
     <button id="suggestion4m" class="suggestion-button-4"></button>
     <a href="mailto:manuel@mosaicgpts.com" class="contact-button-mobile">Contact us</a>
+    {% if session.user %}
+        <a href="/logout" class="btn btn-mobile" id="logout-button-mobile">Log out</a>
+      {% endif %}
   </div>
   <div id="welcome-popup" class="welcome-popup">
     <div class="popup-content">

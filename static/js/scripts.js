@@ -75,7 +75,7 @@ function setBranding() {
     questionSuggestion4 = "How are financial institutions using AI?";
     feedbackLink = 'https://forms.gle/33bv5dPpQ4hQGS4U9';
     welcomePopupTitle = "A custom GPT for finance";
-    welcomePopupText = "Thank you for checking out this early version of a custom GPT built specifically for the finance industry. If you haven't joined out LinkedIn group, you can do so below. If you're a writer or journalist, you can contribute your content to be included in the GPT. In order to learn what the finance community is interested in learning, we may save the questions you ask. DO NOT SHARE ANY PERSONAL INFORMATION. We will take your feedback to make this GPT more useful.";
+    welcomePopupText = "Thank you for checking out this early version of a custom GPT built specifically for the finance industry. If you haven't joined out LinkedIn group, you can do so below. If you're a writer or journalist, you can contribute your content to be included in the GPT. In order to learn what the finance community is interested in learning, we may save the questions you ask. No personal information will be stored. DO NOT SHARE ANY PERSONAL INFORMATION. We will take your feedback to make this GPT more useful.";
   } else if (currentPath === 'Celo') {
     logoHeader = 'Logos/Celo/Celo_Symbol_RGB_Onyx.png';
     headerColor = '#FBF6F1';
@@ -297,6 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function sendDataToGptStats(query, elasticSearchSources) {
+    const currentPath = window.location.pathname;
     fetch('/gpt-stats', {
         method: 'POST',
         headers: {
@@ -305,7 +306,8 @@ document.addEventListener('DOMContentLoaded', function() {
         body: JSON.stringify({
             question: query,
             sources_title: elasticSearchSources.map(source => source.title).join(', '),
-            sources_url: elasticSearchSources.map(source => source.url).join(', ')
+            sources_url: elasticSearchSources.map(source => source.url).join(', '),
+            path: currentPath
         })
     })
     .then(response => response.json())

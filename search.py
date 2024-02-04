@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, jsonify, Response, redirect
-from werkzeug.routing import BaseConverter, ValidationError
+from flask import Flask, render_template, request, jsonify, Response, redirect, url_for, session
+from werkzeug.routing import BaseConverter
 import requests
 from openai import OpenAI
 import os
@@ -7,41 +7,43 @@ import traceback
 import json
 import logging
 import base64
-import redis
-from flask import url_for
-from urllib.parse import urlparse
+from urllib.parse import quote
+from authlib.integrations.flask_client import OAuth
+from authlib.jose import jwt
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-# Load environment variable for Redis URL
-redis_url = os.getenv("REDIS_URL")
-
-# Parse the Redis URL
-parsed_redis_url = urlparse(redis_url)
-
-# Connect to Redis using the URL
-r = redis.Redis(
-    host=parsed_redis_url.hostname,
-    port=parsed_redis_url.port,
-    password=parsed_redis_url.password,
-    db=0
-)
-
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__, static_folder='static')
+app.secret_key = os.getenv("AUTH0_APP_SECRET_KEY")
+
+# Check if running in production
+if os.getenv("FLASK_ENV") == "production":
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['REMEMBER_COOKIE_SECURE'] = True
+else:
+    # For local development, these can be False or not set
+    app.config['SESSION_COOKIE_SECURE'] = False
+    app.config['REMEMBER_COOKIE_SECURE'] = False
+
+oauth = OAuth(app)
+
+oauth.register(
+    "auth0",
+    client_id=os.getenv("AUTH0_CLIENT_ID"),
+    client_secret=os.getenv("AUTH0_CLIENT_SECRET"),
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f'https://{os.getenv("AUTH0_DOMAIN")}/.well-known/openid-configuration'
+)
 
 es_username = os.getenv("ES_USERNAME")
 es_password = os.getenv("ES_PASSWORD")
 es_basic_auth_header = 'Basic ' + base64.b64encode(f'{es_username}:{es_password}'.encode()).decode()
-
-es_pymnts_endpoint = os.getenv("ES_PYMNTS_SEACH_APP_ENDPOINT")
-es_pymnts_search_app_api = os.getenv("ES_PYMNTS_SEARCH_APP_API")
-
-es_bankless_endpoint = os.getenv("ES_BANKLESS_SEARCH_APP_ENDPOINT")
-es_bankless_search_app_api = os.getenv("ES_BANKLESS_SEARCH_APP_API")
 
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -56,71 +58,48 @@ class LowerCaseConverter(BaseConverter):
     
 app.url_map.converters['lowercase'] = LowerCaseConverter
 
-# Farcaster Frames
-image_list = [
-    "https://aef8cbb778975f3e4df2041ad0bae1ca.cdn.bubble.io/f1706204093859x790451107332714700/article_img_placeholder.jpg",
-    "https://ask.mosaicnetwork.co/static/Logos/Bankless/bankless_icon.png",
-    "https://ask.mosaicnetwork.co/static/Logos/Linea/Logomark%20Black%20BG.png",
-]
 
-@app.route('/', methods=["GET", "POST"])
-def api_frames_index():
-    counter = r.incr("image_counter")
-    selected_image = image_list[counter % len(image_list)] if request.method == 'POST' else image_list[0]
+# @app.route('/')
+# def index():
+#    return redirect("http://mosaicnetwork.co", code=302)
 
-    # Build the HTML content with actual URLs for static resources
-    css_url = url_for('static', filename='css/styles.css')
-    icons_url = url_for('static', filename='Icons/fontawesome-free-6.5.1-web/css/all.css')
-    favicon_url = url_for('static', filename='favicon.png')
+@app.route("/login")
+def login():
+    nonce = base64.urlsafe_b64encode(os.urandom(16)).decode('utf-8')
+    session['nonce'] = nonce
+    return oauth.auth0.authorize_redirect(
+        redirect_uri=url_for("callback", _external=True),
+        nonce=nonce
+    )
 
-    # Build the HTML content
-    html_content = f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>GPT Web App</title>
+@app.route("/callback", methods=["GET", "POST"])
+def callback():
+    token = oauth.auth0.authorize_access_token()
+    nonce = session.pop('nonce', None)
+    session["user"] = token
+    userinfo = oauth.auth0.parse_id_token(token, nonce=nonce)
+    session["userinfo"] = userinfo
+    return redirect("/finance")
 
-        <meta property="og:type" content="">
-        <meta property="og:url" content="">
-        <meta property="og:title" content="Mosaic GPTs">
-        <meta property="og:description" content="Custom GPTs">
-        <meta property="og:image" content="none">
+@app.route("/logout")
+def logout():
+    session.clear()
+    return_to_url = quote("https://mosaicnetwork.co", safe='')
+    logout_url = f"https://{os.getenv('AUTH0_DOMAIN')}/v2/logout?client_id={os.getenv('AUTH0_CLIENT_ID')}&returnTo={return_to_url}"
+    return redirect(logout_url)
 
-        <meta property="twitter:card" content="">
-        <meta property="twitter:url" content="">
-        <meta property="twitter:title" content="Mosaic GPTs">
-        <meta property="twitter:description" content="Custom GPTs">
-        <meta property="twitter:image" content="none">
+@app.route("/")
+def home():
+    return redirect("https://mosaicnetwork.co")
 
-        <meta property="fc:frame" content="Browse our GPTs">
-        <meta property="fc:frame:image" content="{selected_image}">
-        <meta property="fc:frame:button:1" content="prev">
-        <meta property="fc:frame:button:2" content="next">
-
-        <link rel="stylesheet" href="{css_url}">
-        <link href="{icons_url}" rel="stylesheet">
-        <link rel="icon" href="{favicon_url}">
-    </head>
-    """
-    return Response(html_content, mimetype='text/html')
+@app.route("/finance")
+def finance():
+    current_path = '/finance'
+    if 'user' not in session:
+        return redirect(url_for('login', next=request.url))
+    return render_template("index.html", current_path=current_path, session=session)
 
 
-
-    """
-    if request.method == "POST":
-        counter = r.incr("image_counter")
-        selected_image = image_list[counter % len(image_list)]
-    else:
-        selected_image = image_list[0]
-    return render_template('index.html', selected_image=selected_image)
-
-
-@app.route('/')
-def index():
-    return redirect("http://mosaicnetwork.co", code=302)
-"""
 
 @app.route('/<lowercase:path>')
 def catch_all(path):
@@ -167,6 +146,7 @@ def trigger_gpt_stats_api():
     question = data.get('question')
     sources_title = data.get('sources_title')
     sources_url = data.get('sources_url')
+    origin = data.get('path')
 
     flask_env = os.getenv('FLASK_ENV', 'development')
     
@@ -183,7 +163,8 @@ def trigger_gpt_stats_api():
     body = {
         "question": question,
         "sources_title": sources_title,
-        "sources_url": sources_url
+        "sources_url": sources_url,
+        "origin": origin
     }
 
     response = requests.post(endpoint, headers=headers, json=body)
