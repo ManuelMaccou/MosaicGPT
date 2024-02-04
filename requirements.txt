@@ -4,6 +4,7 @@ annotated-types==0.6.0
 anyio==4.2.0
 async-timeout==4.0.3
 attrs==23.2.0
+authlib
 beautifulsoup4==4.12.2
 blinker==1.7.0
 certifi==2023.11.17
