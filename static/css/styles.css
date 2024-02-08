@@ -198,6 +198,18 @@ html, body {
   margin-bottom: 20px;
   color: #696969;
 }
+
+.legal-links {
+  font-size: 14px;
+  text-align: end;
+  margin-bottom: 20px;
+  margin-right: 20px;
+}
+
+.legal-links a {
+  color: #696969;
+}
+
 .suggestions {
   width: 50%;
   max-width: 1000px;
